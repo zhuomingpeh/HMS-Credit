@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteNav() {
@@ -5,7 +6,7 @@ export function SiteNav() {
     <nav className="site-nav">
       <div className="site-nav-inner">
         <Link href="/" className="site-logo">
-          <span className="site-logo-mark">$</span>
+          <Image src="/logo-mark.png" alt="HMS Credit" width={57} height={32} priority className="site-logo-mark-img" />
           HMS Credit
         </Link>
         <div className="site-nav-links">

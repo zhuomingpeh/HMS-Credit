@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description:
     "HMS Credit is a licensed moneylender in Singapore offering personal, wedding, business, foreigner and education loans. Visit us at Sim Lim Square or apply online.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.webp",
   },
   openGraph: {
     title: "HMS Credit | Licensed Moneylender in Singapore",

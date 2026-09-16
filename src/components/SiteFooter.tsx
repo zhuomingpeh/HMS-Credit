@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function SiteFooter() {
@@ -6,7 +7,7 @@ export function SiteFooter() {
       <div className="site-footer-inner">
         <div className="site-footer-brand">
           <span className="site-logo">
-            <span className="site-logo-mark">$</span>
+            <Image src="/logo-mark.png" alt="HMS Credit" width={57} height={32} className="site-logo-mark-img" />
             HMS Credit
           </span>
           <p>

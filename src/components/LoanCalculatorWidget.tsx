@@ -59,7 +59,7 @@ export function LoanCalculatorWidget() {
             type="range"
             min={1}
             max={MAX_MONTHLY_RATE}
-            step={0.5}
+            step={1}
             value={rate}
             onChange={(e) => setRate(Number(e.target.value))}
           />
