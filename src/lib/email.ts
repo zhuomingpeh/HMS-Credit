@@ -6,8 +6,7 @@ import { Resend } from "resend";
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export type NewLeadEmailParams = {
-  firstName: string;
-  lastName: string;
+  name: string;
   phone: string;
   email: string;
   loanAmount: number;
@@ -15,10 +14,10 @@ export type NewLeadEmailParams = {
 };
 
 export async function sendNewLeadAdminEmail(params: NewLeadEmailParams): Promise<void> {
-  const { firstName, lastName, phone, email, loanAmount, loanType } = params;
+  const { name, phone, email, loanAmount, loanType } = params;
   const to = process.env.ADMIN_NOTIFICATION_EMAIL ?? "support@hmsmoney.com";
   const amount = loanAmount.toLocaleString("en-SG");
-  const subject = `New loan enquiry: ${firstName} ${lastName} — S$${amount}`;
+  const subject = `New loan enquiry: ${name} — S$${amount}`;
   const purposeLine = loanType ? `\nInterested in: ${loanType}` : "";
 
   if (process.env.NODE_ENV !== "production") {
@@ -32,8 +31,8 @@ export async function sendNewLeadAdminEmail(params: NewLeadEmailParams): Promise
     from,
     to,
     subject,
-    text: `New loan enquiry.\n\nName: ${firstName} ${lastName}\nPhone: ${phone}\nEmail: ${email}\nLoan amount: S$${amount}${purposeLine}`,
-    html: `<p>New loan enquiry.</p><p><strong>Name:</strong> ${escapeHtml(`${firstName} ${lastName}`)}<br><strong>Phone:</strong> ${escapeHtml(phone)}<br><strong>Email:</strong> ${escapeHtml(email)}<br><strong>Loan amount:</strong> S$${amount}${loanType ? `<br><strong>Interested in:</strong> ${escapeHtml(loanType)}` : ""}</p>`,
+    text: `New loan enquiry.\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\nLoan amount: S$${amount}${purposeLine}`,
+    html: `<p>New loan enquiry.</p><p><strong>Name:</strong> ${escapeHtml(name)}<br><strong>Phone:</strong> ${escapeHtml(phone)}<br><strong>Email:</strong> ${escapeHtml(email)}<br><strong>Loan amount:</strong> S$${amount}${loanType ? `<br><strong>Interested in:</strong> ${escapeHtml(loanType)}` : ""}</p>`,
   });
 
   if (error) {

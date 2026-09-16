@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 import { TrustBar } from "@/components/TrustBar";
@@ -78,23 +79,34 @@ export default function Home() {
           you with competitively designed loan packages. Having served the industry for well over a decade, HMS
           Credit Pte Ltd is committed to being your reliable and trusted choice for all your loan needs.
         </p>
-        <div className="card" style={{ maxWidth: 520 }}>
-          <h3>Visit Us</h3>
-          <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
-            #01-08 Sim Lim Square
-            <br />
-            1 Rochor Canal Road, Singapore 188504
-          </p>
-          <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
-            Monday&ndash;Saturday: 11am&ndash;7pm
-            <br />
-            Sundays: by appointment only
-            <br />
-            Closed on public holidays
-          </p>
-          <a href="tel:+6563339061" className="button" style={{ display: "inline-block" }}>
-            Call +65 6333 9061
-          </a>
+
+        <div className="about-layout">
+          <div className="card" style={{ maxWidth: 520 }}>
+            <h3>Visit Us</h3>
+            <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
+              #01-08 Sim Lim Square
+              <br />
+              1 Rochor Canal Road, Singapore 188504
+            </p>
+            <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
+              Monday&ndash;Saturday: 11am&ndash;7pm
+              <br />
+              Sundays: by appointment only
+              <br />
+              Closed on public holidays
+            </p>
+            <a href="tel:+6563339061" className="button" style={{ display: "inline-block" }}>
+              Call +65 6333 9061
+            </a>
+          </div>
+
+          <Image
+            src="/photos/storefront-full.jpg"
+            alt="HMS Credit's storefront at #01-08 Sim Lim Square"
+            width={900}
+            height={1474}
+            className="about-photo"
+          />
         </div>
       </section>
     </>

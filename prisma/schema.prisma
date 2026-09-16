@@ -11,12 +11,9 @@ datasource db {
   provider = "postgresql"
 }
 
-enum IdHolderType {
-  IC
-  WORK_PERMIT
-  SPASS
-  EPASS
-  OTHER
+enum Residency {
+  SG_PR
+  FOREIGNER
 }
 
 enum LeadStatus {
@@ -26,15 +23,13 @@ enum LeadStatus {
 }
 
 model Lead {
-  id           String       @id @default(cuid())
-  firstName    String
-  lastName     String
-  phone        String
-  email        String
-  employed     Boolean
-  idHolderType IdHolderType
-  loanAmount   Int
-  loanType     String? // slug of the /loans/[slug] page the enquiry came from, if any
-  status       LeadStatus   @default(NEW)
-  createdAt    DateTime     @default(now())
+  id         String     @id @default(cuid())
+  name       String
+  phone      String
+  email      String
+  residency  Residency
+  loanAmount Int
+  loanType   String? // slug of the /loans/[slug] page the enquiry came from, if any
+  status     LeadStatus @default(NEW)
+  createdAt  DateTime   @default(now())
 }

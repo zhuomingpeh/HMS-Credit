@@ -33,15 +33,9 @@ export function LeadForm({ loanType }: { loanType?: string }) {
       {state.error && <div className="error-banner">{state.error}</div>}
       {loanType && <input type="hidden" name="loanType" value={loanType} />}
 
-      <div className="field-row">
-        <div className="field">
-          <label htmlFor="firstName">First name</label>
-          <input id="firstName" name="firstName" type="text" required autoComplete="given-name" />
-        </div>
-        <div className="field">
-          <label htmlFor="lastName">Last name</label>
-          <input id="lastName" name="lastName" type="text" required autoComplete="family-name" />
-        </div>
+      <div className="field">
+        <label htmlFor="name">Name</label>
+        <input id="name" name="name" type="text" required autoComplete="name" />
       </div>
 
       <div className="field">
@@ -55,29 +49,15 @@ export function LeadForm({ loanType }: { loanType?: string }) {
       </div>
 
       <div className="field">
-        <label>Are you currently employed?</label>
+        <label>Residency status</label>
         <div className="radio-row">
           <label className="radio-option">
-            <input type="radio" name="employed" value="yes" required /> Yes
+            <input type="radio" name="residency" value="SG_PR" required /> Singaporean/PR
           </label>
           <label className="radio-option">
-            <input type="radio" name="employed" value="no" /> No
+            <input type="radio" name="residency" value="FOREIGNER" /> Foreigner
           </label>
         </div>
-      </div>
-
-      <div className="field">
-        <label htmlFor="idHolderType">IC or PASS holder</label>
-        <select id="idHolderType" name="idHolderType" required defaultValue="">
-          <option value="" disabled>
-            Select an option
-          </option>
-          <option value="IC">I/C</option>
-          <option value="WORK_PERMIT">Work Permit</option>
-          <option value="SPASS">S Pass</option>
-          <option value="EPASS">E Pass</option>
-          <option value="OTHER">Other</option>
-        </select>
       </div>
 
       <div className="field">

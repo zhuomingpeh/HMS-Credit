@@ -5,7 +5,6 @@ export const metadata: Metadata = {
   description: "How HMS Credit collects, uses, and protects borrower information.",
 };
 
-// TODO: fill in UEN / Moneylender's Licence No. once confirmed — placeholders below.
 export default function PrivacyPolicyPage() {
   return (
     <main className="page legal-page">
@@ -17,20 +16,20 @@ export default function PrivacyPolicyPage() {
 
       <h2>Company details</h2>
       <p>
-        HMS Credit Pte Ltd
+        HMS CREDIT PTE. LTD.
         <br />
-        UEN: [to be confirmed]
+        UEN: 201703408D
         <br />
-        Moneylender&apos;s Licence No.: [to be confirmed]
+        Moneylender&apos;s Licence No.: 91/2026
         <br />
         Registered Address: #01-08 Sim Lim Square, 1 Rochor Canal Road, Singapore 188504
       </p>
 
       <h2>Information we collect</h2>
       <p>
-        Name, contact number, email address, employment status, ID/pass type, requested loan amount, and — where you
-        apply in person or provide supporting documents — income and identity documents required under the
-        Moneylenders Act and its regulations.
+        Name, contact number, email address, residency status, requested loan amount, and — where you apply in
+        person or provide supporting documents — income and identity documents required under the Moneylenders Act
+        and its regulations.
       </p>
 
       <h2>How we use your information</h2>

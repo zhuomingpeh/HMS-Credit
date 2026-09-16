@@ -50,9 +50,9 @@ export function SiteFooter() {
       </div>
 
       <p className="site-footer-disclosure">
-        HMS Credit Pte Ltd is a licensed moneylender regulated by the Registry of Moneylenders, Ministry of Law,
-        Singapore. Borrow only what you can afford to repay. For a full list of licensed moneylenders, visit the
-        Ministry of Law&apos;s official registry.
+        HMS CREDIT PTE. LTD. (UEN 201703408D) is a licensed moneylender regulated by the Registry of Moneylenders,
+        Ministry of Law, Singapore. Moneylender&apos;s Licence No. 91/2026. Borrow only what you can afford to repay.
+        For a full list of licensed moneylenders, visit the Ministry of Law&apos;s official registry.
       </p>
     </footer>
   );

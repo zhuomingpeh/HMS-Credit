@@ -25,9 +25,15 @@ npm run dev
 Without `RESEND_API_KEY` set, lead notifications just log to the console instead of sending —
 useful for local dev.
 
-## Outstanding before this can go live
+## Status
 
-- Real logo/brand assets (favicon, OG image) — currently a plain text "$" mark placeholder
-- Company UEN and Moneylender's Licence No. in `/privacy` (marked `[to be confirmed]`)
-- A Supabase Postgres project + `DATABASE_URL`
-- Domain + Vercel project wiring (Vercel project "HMS-Credit" already created)
+Deployed at https://hms-credit.vercel.app (Vercel project "loanify/hms-credit"). Supabase Postgres
+is live (ap-southeast-1). Real logo/favicon and storefront photos are in. UEN 201703408D and
+Moneylender's Licence No. 91/2026 are in `/privacy`, the footer, and the JSON-LD.
+
+## Outstanding before this can go live on hmsmoney.com
+
+- Custom domain not yet attached — waiting deliberately until Singpass is ready (see below)
+- Singpass integration not started — needs its own API client registration/approval (separate
+  from Loanify's), then the borrower application portal itself (phase 2)
+- No git remote (GitHub) yet — deploys go straight from the local working tree via `vercel deploy`

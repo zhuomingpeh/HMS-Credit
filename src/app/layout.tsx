@@ -41,10 +41,14 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "FinancialService",
   name: "HMS Credit",
-  legalName: "HMS Credit Pte Ltd",
+  legalName: "HMS CREDIT PTE. LTD.",
   url: "https://hmsmoney.com",
   telephone: "+65 6333 9061",
   email: "support@hmsmoney.com",
+  identifier: [
+    { "@type": "PropertyValue", name: "UEN", value: "201703408D" },
+    { "@type": "PropertyValue", name: "Moneylender's Licence No.", value: "91/2026" },
+  ],
   address: {
     "@type": "PostalAddress",
     streetAddress: "1 Rochor Canal Road, #01-08 Sim Lim Square",
