@@ -314,13 +314,32 @@ button {
 /* ---- Homepage hero ---- */
 
 .home-hero {
+  position: relative;
   width: 100%;
+  overflow: hidden;
   background: linear-gradient(155deg, var(--brand-navy) 0%, var(--brand-navy-dark) 100%);
   color: white;
   padding: 3.5rem 1.5rem 4rem;
 }
 
+.home-hero-bg {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Navy scrim over the storefront photo — keeps the white hero copy legible regardless of
+   the photo's own brightness, while still reading as "our real shop" at a glance. */
+.home-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(155deg, rgba(18, 50, 98, 0.78) 0%, rgba(12, 33, 72, 0.82) 100%);
+}
+
 .home-hero-inner {
+  position: relative;
+  z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
   display: grid;

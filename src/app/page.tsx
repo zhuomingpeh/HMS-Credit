@@ -8,6 +8,16 @@ export default function Home() {
   return (
     <>
       <section className="home-hero">
+        <Image
+          src="/photos/storefront-entrance.jpg"
+          alt="HMS Credit's storefront at #01-08 Sim Lim Square"
+          fill
+          priority
+          sizes="100vw"
+          className="home-hero-bg"
+        />
+        <div className="home-hero-scrim" aria-hidden="true" />
+
         <div className="home-hero-inner">
           <div className="home-hero-copy">
             <h1>Your Reliable &amp; Trusted Money Lender in Singapore</h1>
