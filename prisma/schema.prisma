@@ -1,0 +1,40 @@
+// HMS Credit — v1 schema (marketing site + lead capture only).
+// No borrower/lender/application data model yet — that lands in phase 2 alongside Singpass.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum IdHolderType {
+  IC
+  WORK_PERMIT
+  SPASS
+  EPASS
+  OTHER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model Lead {
+  id           String       @id @default(cuid())
+  firstName    String
+  lastName     String
+  phone        String
+  email        String
+  employed     Boolean
+  idHolderType IdHolderType
+  loanAmount   Int
+  loanType     String? // slug of the /loans/[slug] page the enquiry came from, if any
+  status       LeadStatus   @default(NEW)
+  createdAt    DateTime     @default(now())
+}

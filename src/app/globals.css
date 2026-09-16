@@ -1,0 +1,703 @@
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #16213a;
+  /* Brand tokens — navy + green, matching the Sim Lim Square storefront signage. */
+  --brand-navy: #123262;
+  --brand-navy-dark: #0c2148;
+  --brand-green: #2fae4e;
+  --brand-heading: #0f223f;
+  --brand-body: #5b6b82;
+  --brand-radius: 10px;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- Layout primitives (no UI framework) ---- */
+
+.page {
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.page-wide {
+  max-width: 1080px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  color: var(--brand-heading);
+}
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 0.6rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin: 0 0 1rem;
+}
+
+h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.6rem;
+}
+
+p.subtitle {
+  color: var(--brand-body);
+  margin-bottom: 1.5rem;
+  max-width: 640px;
+}
+
+.card {
+  border: 1px solid rgba(18, 50, 98, 0.14);
+  border-radius: var(--brand-radius);
+  padding: 1.75rem;
+  background: color-mix(in srgb, var(--background) 97%, var(--brand-navy) 3%);
+}
+
+/* ---- Forms ---- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--brand-heading);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: var(--background);
+  border: 1px solid rgba(18, 50, 98, 0.25);
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--brand-navy);
+  outline-offset: -1px;
+}
+
+.radio-row {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 0.25rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.radio-option input {
+  width: auto;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.button {
+  display: inline-block;
+  background: var(--brand-green);
+  color: white;
+  border: none;
+  border-radius: var(--brand-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.button:hover {
+  background: color-mix(in srgb, var(--brand-green) 88%, black);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  display: inline-block;
+  background: transparent;
+  border: 1.5px solid var(--background);
+  color: var(--background);
+  border-radius: var(--brand-radius);
+  padding: 0.7rem 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.button-navy {
+  background: var(--brand-navy);
+}
+
+.button-navy:hover {
+  background: var(--brand-navy-dark);
+}
+
+.error-banner {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+  padding: 0.65rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.submission-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  border-radius: var(--brand-radius);
+  background: color-mix(in srgb, var(--brand-green) 12%, var(--background));
+  border: 1px solid rgba(47, 174, 78, 0.35);
+}
+
+.submission-done-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 560px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Top nav ---- */
+
+.site-nav {
+  width: 100%;
+  border-bottom: 1px solid rgba(18, 50, 98, 0.1);
+}
+
+.site-nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--brand-navy);
+  white-space: nowrap;
+}
+
+.site-logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: white;
+  font-size: 1.1rem;
+}
+
+.site-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.site-nav-links a {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brand-heading);
+}
+
+.site-nav-links a:hover {
+  color: var(--brand-navy);
+}
+
+/* .site-nav-links a's color rule above (class+element) outranks the plain .button class,
+   so the "Apply Now" pill needs its own equal-specificity override back to white. */
+.site-nav-links a.site-nav-cta,
+.site-nav-links a.site-nav-cta:hover {
+  color: white;
+}
+
+.site-nav-cta {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 720px) {
+  .site-nav-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .site-nav-links {
+    gap: 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ---- Homepage hero ---- */
+
+.home-hero {
+  width: 100%;
+  background: linear-gradient(155deg, var(--brand-navy) 0%, var(--brand-navy-dark) 100%);
+  color: white;
+  padding: 3.5rem 1.5rem 4rem;
+}
+
+.home-hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.home-hero-copy h1 {
+  color: white;
+  font-size: 2.5rem;
+}
+
+.home-hero-copy .subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+  max-width: 480px;
+}
+
+.home-hero-cta-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.home-hero-note {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 460px;
+}
+
+.home-hero-form {
+  background: var(--background);
+  color: var(--foreground);
+  border-radius: var(--brand-radius);
+  padding: 1.75rem;
+  box-shadow: 0 20px 50px rgba(8, 20, 41, 0.35);
+}
+
+.home-hero-form h2 {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 900px) {
+  .home-hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero-copy h1 {
+    font-size: 2rem;
+  }
+}
+
+/* ---- Trust bar ---- */
+
+.trust-bar {
+  width: 100%;
+  background: color-mix(in srgb, var(--brand-navy) 5%, var(--background));
+  border-bottom: 1px solid rgba(18, 50, 98, 0.08);
+}
+
+.trust-bar-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--brand-body);
+}
+
+.trust-bar-inner strong {
+  color: var(--brand-heading);
+}
+
+/* ---- Loan type grid ---- */
+
+.loans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.loan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loan-card p {
+  font-size: 0.9rem;
+  color: var(--brand-body);
+  margin: 0;
+}
+
+.loan-card-link {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+@media (max-width: 900px) {
+  .loans-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .loans-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Loan detail page ---- */
+
+.loan-detail-kicker {
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-green);
+  margin-bottom: 0.4rem;
+}
+
+.bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+}
+
+.bullet-list li::before {
+  content: "✓";
+  flex-shrink: 0;
+  color: var(--brand-green);
+  font-weight: 700;
+}
+
+/* ---- Steps ---- */
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--brand-navy);
+  color: white;
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 0.7rem;
+}
+
+@media (max-width: 640px) {
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- FAQ ---- */
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faq-item {
+  border: 1px solid rgba(18, 50, 98, 0.14);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  color: var(--brand-heading);
+}
+
+.faq-item p {
+  margin: 0.75rem 0 0;
+  color: var(--brand-body);
+}
+
+/* ---- Loan calculator ---- */
+
+.calc-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  margin: 1.5rem 0 2rem;
+}
+
+.calc-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.calc-result-label {
+  font-size: 0.82rem;
+  color: var(--brand-body);
+}
+
+.calc-result-figure {
+  font-size: 2rem;
+  font-family: var(--font-heading), Arial, Helvetica, sans-serif;
+  color: var(--brand-navy);
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-result-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.calc-result-rows > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.calc-result-rows span:first-child {
+  color: var(--brand-body);
+}
+
+.calc-disclaimer {
+  font-size: 0.78rem;
+  color: var(--brand-body);
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .calc-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Legal pages ---- */
+
+.legal-page h2 {
+  margin-top: 1.75rem;
+}
+
+.legal-page p {
+  margin: 0 0 0.5rem;
+  color: var(--brand-body);
+}
+
+.legal-disclaimer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(18, 50, 98, 0.15);
+  font-size: 0.8rem;
+  color: var(--brand-body);
+}
+
+/* ---- Contact / office info ---- */
+
+.office-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 720px) {
+  .office-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Footer ---- */
+
+.site-footer {
+  width: 100%;
+  margin-top: auto;
+  background: var(--brand-navy-dark);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 2.5rem 1.5rem 2rem;
+}
+
+.site-footer-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.site-footer-brand .site-logo {
+  color: white;
+}
+
+.site-footer-brand p {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0.4rem 0 0;
+  max-width: 320px;
+}
+
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.site-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.site-footer-col strong {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.2rem;
+}
+
+.site-footer-col a {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.site-footer-col a:hover {
+  color: white;
+}
+
+.site-footer-disclosure {
+  max-width: 1080px;
+  margin: 2rem auto 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 640px) {
+  .site-footer-inner {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
