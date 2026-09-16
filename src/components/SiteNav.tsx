@@ -15,7 +15,7 @@ export function SiteNav() {
           <Link href="/about">About Us</Link>
           <Link href="/faq">FAQ</Link>
           <Link href="/contact">Contact</Link>
-          <Link href="/contact#apply" className="button button-navy site-nav-cta">
+          <Link href="/apply" className="button button-navy site-nav-cta">
             Apply Now
           </Link>
         </div>

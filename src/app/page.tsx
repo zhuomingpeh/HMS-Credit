@@ -42,6 +42,9 @@ export default function Home() {
           <div className="home-hero-form" id="apply">
             <h2>Get started</h2>
             <LeadForm />
+            <p className="home-hero-singpass-note">
+              Prefer to skip the form? <Link href="/apply">Apply instantly with Singpass &rarr;</Link>
+            </p>
           </div>
         </div>
       </section>

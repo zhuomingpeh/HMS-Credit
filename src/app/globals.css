@@ -385,6 +385,18 @@ button {
   font-size: 1.15rem;
 }
 
+.home-hero-singpass-note {
+  margin-top: 0.85rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--brand-body);
+}
+
+.home-hero-singpass-note a {
+  color: var(--brand-navy);
+  font-weight: 700;
+}
+
 @media (max-width: 900px) {
   .home-hero-inner {
     grid-template-columns: 1fr;

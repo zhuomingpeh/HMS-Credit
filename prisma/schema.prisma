@@ -1,5 +1,7 @@
-// HMS Credit — v1 schema (marketing site + lead capture only).
-// No borrower/lender/application data model yet — that lands in phase 2 alongside Singpass.
+// HMS Credit schema — v1 marketing + lead capture, plus the Singpass/MyInfo Applicant intake
+// added ahead of actual Singpass API registration (see src/lib/singpass/ for the OIDC plumbing,
+// adapted from Loanify's own production-approved integration). No staff/admin portal yet — an
+// Applicant row is a verified application for staff to follow up on manually, not an account.
 
 generator client {
   provider     = "prisma-client"
@@ -32,4 +34,123 @@ model Lead {
   loanType   String? // slug of the /loans/[slug] page the enquiry came from, if any
   status     LeadStatus @default(NEW)
   createdAt  DateTime   @default(now())
+}
+
+// ---------- Singpass / MyInfo application intake ----------
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+// Distinct from Lead's simpler SG_PR/FOREIGNER self-reported Residency — Singpass's
+// residentialstatus attribute distinguishes Citizen from PR, which affects Moneylenders Act
+// borrowing limits (see the field-justification table this schema was built against).
+enum ResidentialStatus {
+  CITIZEN
+  PR
+  FOREIGNER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum ApplicantStatus {
+  NEW
+  REVIEWED
+  CONTACTED
+  CLOSED
+}
+
+// One row per completed Singpass/MyInfo application — the fast-track alternative to the plain
+// Lead form. Field set and justifications match exactly the 28-field table supplied for this
+// project's Singpass app registration (no more, no fewer, per Singpass's "don't request what
+// you don't use" principle — see src/lib/singpass/client.ts's SCOPES list).
+//
+// NRIC/FIN is stored as returned by MyInfo (unmasked) for now — staff need the full number to
+// process a loan. Before this goes live, confirm it's covered by encryption-at-rest (Supabase's
+// default) and lock down table access; a dedicated masking layer (cf. Loanify's src/lib/masking.ts)
+// can follow once there's a staff portal that actually displays this data to more than one role.
+model Applicant {
+  id     String @id @default(cuid())
+  nric   String // uinfin
+  name   String
+  sex    Sex?
+  race   String?
+  // MyInfo returns dob as a plain "YYYY-MM-DD" string, not a parsed date — stored as-is.
+  dateOfBirth       String?
+  residentialStatus ResidentialStatus
+  nationality       String?
+
+  // Foreign-borrower fields — only meaningful when residentialStatus is FOREIGNER.
+  passType       String?
+  passStatus     String?
+  passExpiryDate String?
+
+  mobileNumber String?
+  email        String?
+
+  // Registered address (regadd) — block/street/building/floor/unit/postal, each optional since
+  // MyInfo omits sub-fields it doesn't have (e.g. no unit number for a landed property).
+  address Json?
+
+  // Deliberately requested even though Loanify's own app dropped it as unused (build spec
+  // §10, 2026-08-14) — this project's field-justification table calls it out explicitly for
+  // financial-profile assessment.
+  housingType String?
+
+  ownsPrivateProperty Boolean?
+
+  employerName String?
+  occupation   String?
+
+  maritalStatus MaritalStatus?
+
+  // vehicles.vehicleno — a MyInfo persona can hold more than one registered vehicle; stored as
+  // a plain string array rather than a single field.
+  vehicleNumbers String[]
+
+  // hdbownership — { numberOfOwners, address: {...}, dwellingType, leaseCommencementDate,
+  // dateOfPurchase, outstandingLoanBalance, monthlyLoanInstalment }. Null when MyInfo returns
+  // no HDB ownership record for this applicant (e.g. they don't own an HDB flat).
+  hdbOwnership Json?
+
+  // cpfcontributions.history — array of { date, month, employerName, amount }, up to 15 months.
+  cpfContributions Json?
+
+  // noahistory.noas — array of { year, amount, ... } Notice of Assessment records.
+  noticeOfAssessments Json?
+
+  // Raw MyInfo person_info payload, kept verbatim alongside the parsed fields above — lets a
+  // mapping bug or a field added later be recovered from real data instead of re-prompting the
+  // applicant through Singpass again.
+  rawMyInfo Json
+
+  singpassSub String @unique // OIDC `sub` claim — dedupes repeat applications from one identity
+
+  loanAmount Int?
+  loanType   String? // slug of the /loans/[slug] page the applicant started from, if any
+
+  status    ApplicantStatus @default(NEW)
+  createdAt DateTime        @default(now())
+}
+
+// One row per Singpass sign-in attempt (PAR → redirect → callback). Mirrors Loanify's
+// SingpassAuthSession exactly (build spec §10.2) — short-lived, single-use, holds the PKCE
+// verifier and the ephemeral DPoP keypair between the authorize redirect and the callback.
+model SingpassAuthSession {
+  id             String    @id @default(cuid())
+  state          String    @unique
+  nonce          String
+  codeVerifier   String
+  dpopPrivateJwk Json?
+  dpopPublicJwk  Json?
+  loanAmount     Int? // stashed from the pre-auth form so the callback can attach it to the Applicant
+  loanType       String?
+  createdAt      DateTime  @default(now())
+  consumedAt     DateTime?
 }
