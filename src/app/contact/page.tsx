@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { LeadForm } from "@/components/LeadForm";
 
 export const metadata: Metadata = {
@@ -35,18 +36,30 @@ export default function ContactPage() {
         </div>
       </div>
 
-      <div className="card" style={{ maxWidth: 520, marginBottom: "2rem" }}>
-        <h3>Our Office</h3>
-        <p style={{ color: "var(--brand-body)" }}>
-          #01-08 Sim Lim Square
-          <br />
-          1 Rochor Canal Road, Singapore 188504
-        </p>
-      </div>
+      <div className="calc-layout">
+        <div>
+          <div className="card" style={{ marginBottom: "1.5rem" }}>
+            <h3>Our Office</h3>
+            <p style={{ color: "var(--brand-body)" }}>
+              #01-08 Sim Lim Square
+              <br />
+              1 Rochor Canal Road, Singapore 188504
+            </p>
+          </div>
 
-      <div className="card" id="apply" style={{ maxWidth: 520 }}>
-        <h2>Apply Now</h2>
-        <LeadForm />
+          <Image
+            src="/photos/storefront-entrance.jpg"
+            alt="HMS Credit's entrance at #01-08 Sim Lim Square"
+            width={900}
+            height={1861}
+            className="about-photo"
+          />
+        </div>
+
+        <div className="card" id="apply">
+          <h2>Apply Now</h2>
+          <LeadForm />
+        </div>
       </div>
     </main>
   );

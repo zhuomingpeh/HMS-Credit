@@ -624,6 +624,35 @@ button {
   }
 }
 
+/* ---- Storefront photos (About, Contact) ---- */
+
+.about-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.about-photo {
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: var(--brand-radius);
+  box-shadow: 0 1px 3px rgba(16, 32, 51, 0.12);
+}
+
+@media (max-width: 720px) {
+  .about-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .about-photo {
+    max-height: 420px;
+  }
+}
+
 /* ---- Footer ---- */
 
 .site-footer {

@@ -10,3 +10,4 @@ src/generated/
 
 .vercel
 .env*
+/design-assets/
