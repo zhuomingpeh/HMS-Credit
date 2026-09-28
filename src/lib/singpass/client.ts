@@ -15,7 +15,7 @@ import {
 } from "./crypto";
 import { mapMyInfoToApplicant, type MyInfoPersonInfo } from "./myinfo";
 import { sendNewApplicantAdminEmail } from "@/lib/email";
-import type { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 const CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
 const SESSION_TTL_MS = 10 * 60 * 1000; // 10 minutes — the whole authorize -> callback round trip
@@ -113,6 +113,10 @@ async function parRequest(
 // config.ts's singpassFapiDiscoveryUrl() for how every endpoint is derived rather than
 // hardcoded.
 export async function startSingpassAuth(prefill?: { loanAmount?: number; loanType?: string }): Promise<{ redirectUrl: string }> {
+  // Abandoned authorization material is no longer usable after the session TTL.
+  await prisma.singpassAuthSession.deleteMany({
+    where: { createdAt: { lt: new Date(Date.now() - SESSION_TTL_MS) } },
+  });
   const discovery = await getSingpassFapiDiscoveryDocument(singpassFapiDiscoveryUrl());
   const clientId = singpassClientId();
   const redirectUri = singpassRedirectUri();
@@ -179,7 +183,8 @@ export async function completeSingpassAuth(code: string, state: string): Promise
 
   const claimed = await prisma.singpassAuthSession.updateMany({
     where: { id: session.id, consumedAt: null, createdAt: { gt: new Date(Date.now() - SESSION_TTL_MS) } },
-    data: { consumedAt: new Date() },
+    // Keep the already-loaded material only in this request's memory during exchange.
+    data: { consumedAt: new Date(), dpopPrivateJwk: Prisma.DbNull, dpopPublicJwk: Prisma.DbNull, codeVerifier: "", nonce: "" },
   });
   if (claimed.count !== 1) return { error: "This sign-in was already used or expired." };
 

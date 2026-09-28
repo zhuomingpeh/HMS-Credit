@@ -116,7 +116,7 @@ export type CpfContributionRow = { date?: string; month?: string; employerName?:
 
 function mapCpfContributions(info: MyInfoPersonInfo): CpfContributionRow[] {
   const raw = info["cpfcontributions"] as { history?: Array<Record<string, MyInfoMeta>> } | undefined;
-  const history = raw?.history ?? [];
+  const history = Array.isArray(raw?.history) ? raw.history.filter((row) => row && typeof row === "object") : [];
   return history
     .map((row) => ({
       date: stringValue(row.date),
@@ -127,18 +127,26 @@ function mapCpfContributions(info: MyInfoPersonInfo): CpfContributionRow[] {
     .filter((row) => row.date !== undefined || row.employerName !== undefined || row.amount !== undefined);
 }
 
-export type NoticeOfAssessmentRow = { yearOfAssessment?: number; amount?: number; assessmentType?: string };
+export type NoticeOfAssessmentRow = {
+  yearOfAssessment?: number; amount?: number; assessmentType?: string;
+  employment?: number; trade?: number; rent?: number; interest?: number; taxClearance?: string;
+};
 
 function mapNoticeOfAssessments(info: MyInfoPersonInfo): NoticeOfAssessmentRow[] {
   const noaHistory = info["noahistory"] as { noas?: Array<Record<string, MyInfoMeta>> } | undefined;
-  const rows = noaHistory?.noas ?? [];
+  const rows = Array.isArray(noaHistory?.noas) ? noaHistory.noas.filter((row) => row && typeof row === "object") : [];
   return rows
     .map((row) => {
       const year = stringValue(row.yearofassessment);
       return {
-        yearOfAssessment: year !== undefined ? Number(year) : undefined,
+        yearOfAssessment: year && /^\d{4}$/.test(year) ? Number(year) : undefined,
         amount: numberValue(row.amount),
         assessmentType: stringValue(row.category),
+        employment: numberValue(row.employment),
+        trade: numberValue(row.trade),
+        rent: numberValue(row.rent),
+        interest: numberValue(row.interest),
+        taxClearance: stringValue(row.taxclearance),
       };
     })
     .filter((row) => row.yearOfAssessment !== undefined || row.amount !== undefined);
@@ -154,10 +162,10 @@ export type HdbOwnership = {
   monthlyLoanInstalment?: number;
 };
 
-function mapHdbOwnership(info: MyInfoPersonInfo): HdbOwnership | undefined {
-  const raw = info["hdbownership"];
-  const entry = (Array.isArray(raw) ? raw[0] : raw) as (Record<string, MyInfoMeta> & MyInfoMeta) | undefined;
-  if (!entry || typeof entry !== "object") return undefined;
+function mapHdbEntry(raw: unknown): HdbOwnership | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const entry = raw as Record<string, MyInfoMeta> & MyInfoMeta;
+  if (entry.unavailable) return undefined;
 
   const numberOfOwners = withParentSource(entry["noofowners"], entry);
   const dwellingType = withParentSource(entry["hdbtype"], entry);
@@ -176,6 +184,12 @@ function mapHdbOwnership(info: MyInfoPersonInfo): HdbOwnership | undefined {
     outstandingLoanBalance: numberValue(outstandingLoan),
     monthlyLoanInstalment: numberValue(monthlyInstalment),
   };
+}
+
+function mapHdbOwnership(info: MyInfoPersonInfo): HdbOwnership[] {
+  const raw = info["hdbownership"];
+  return (Array.isArray(raw) ? raw : raw ? [raw] : [])
+    .map(mapHdbEntry).filter((entry): entry is HdbOwnership => entry !== undefined);
 }
 
 /** vehicles — array of {classification, source, lastupdated, vehicleno: {value}, ...}. Only
@@ -209,7 +223,7 @@ export type ApplicantMyInfoData = {
   occupation?: string;
   maritalStatus?: "SINGLE" | "MARRIED" | "DIVORCED" | "WIDOWED";
   vehicleNumbers: string[];
-  hdbOwnership?: HdbOwnership;
+  hdbOwnership: HdbOwnership[];
   cpfContributions: CpfContributionRow[];
   noticeOfAssessments: NoticeOfAssessmentRow[];
 };

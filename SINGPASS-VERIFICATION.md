@@ -32,17 +32,28 @@ Registered callback currently used: https://hms-credit.vercel.app/api/auth/singp
 - Official populated Myinfo persona successfully reached token exchange and encrypted
   UserInfo response verification. This exposed an incorrect mandatory exp requirement;
   corrected with a regression test using the documented UserInfo claim shape.
+- End-to-end foreigner and citizen test applications now saved successfully in Supabase.
+- Citizen profile returned 15 CPF rows, two NOA rows, two HDB records and two vehicles.
+  Fixed mapping to retain both HDB records and detailed NOA income components; remapped
+  the two known test records from their existing raw payloads, without another login.
+- Mapping tests cover multiple properties, zero balances, unavailable/malformed collections
+  and the distinction between absent and blank foreigner residential status.
+- Enabled RLS and revoked anon/authenticated table privileges on Applicant, Lead and
+  SingpassAuthSession using prisma/security.sql. Verified server connectivity remains valid.
+- Removed expired authorization sessions. New flows clean expired sessions and clear
+  consumed PKCE/DPoP material from the database immediately after atomic session claim.
 
 ## Blocked / remaining before production readiness
-- Retry populated Myinfo persona after the UserInfo exp fix. Successful persistence and all
-  28 returned field mappings are NOT yet verified end-to-end.
 - Portal purpose currently says "application of loan matching"; update to describe direct
   loan applications to HMS Credit before production onboarding.
 - Validate cancelled/expired/replayed callbacks end-to-end.
 - Review Myinfo display/consent requirements and application review before submission;
   the scaffold currently persists data directly at callback.
-- Staff access controls, retention/cleanup of stored Myinfo/session data, notification delivery,
-  and production onboarding remain launch requirements. Do not call this fully compliant.
+- Staff portal/access controls, applicant-data retention, notification delivery, and production
+  onboarding remain launch requirements. No RESEND_API_KEY is currently configured in
+  Vercel production, so application notification emails are not yet sent.
+- A final production-domain redirect registration and production app approval are still
+  needed. The deployed integration intentionally remains connected to Singpass staging.
 - Test account password is not stored in the repository or environment variables.
 
 Testing references:

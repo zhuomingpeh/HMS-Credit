@@ -114,9 +114,8 @@ model Applicant {
   // a plain string array rather than a single field.
   vehicleNumbers String[]
 
-  // hdbownership — { numberOfOwners, address: {...}, dwellingType, leaseCommencementDate,
-  // dateOfPurchase, outstandingLoanBalance, monthlyLoanInstalment }. Null when MyInfo returns
-  // no HDB ownership record for this applicant (e.g. they don't own an HDB flat).
+  // hdbownership — array of all returned ownership records; [] when none are available.
+  // Each record retains the seven requested HDB fields, including zero balances.
   hdbOwnership Json?
 
   // cpfcontributions.history — array of { date, month, employerName, amount }, up to 15 months.
