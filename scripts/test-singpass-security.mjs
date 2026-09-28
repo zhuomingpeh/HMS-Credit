@@ -18,19 +18,21 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 try {
  const api=await import(pathToFileURL(runtime.pathname.replace(/^\/(\w:)/,'$1')).href).catch(()=>import(runtime.href));
  const opts={tokenUse:'id_token',jwksUri:`http://127.0.0.1:${server.address().port}/jwks`,expectedIssuer:'https://issuer.test',expectedAudience:'test-client',expectedNonce:'nonce-test'};
- async function token(overrides={}) {
+ async function token(overrides={}, encryption='A256CBC-HS512') {
   const now=Math.floor(Date.now()/1000);
   const jwt=await new SignJWT({iss:opts.expectedIssuer,aud:opts.expectedAudience,sub:'test-sub',iat:now,exp:now+60,nonce:'nonce-test',...overrides}).setProtectedHeader({alg:'ES256',kid:'test'}).sign(sig.privateKey);
-  return new CompactEncrypt(new TextEncoder().encode(jwt)).setProtectedHeader({alg:'ECDH-ES+A256KW',enc:'A256GCM'}).encrypt(enc.publicKey);
+  return new CompactEncrypt(new TextEncoder().encode(jwt)).setProtectedHeader({alg:'ECDH-ES+A256KW',enc:encryption}).encrypt(enc.publicKey);
  }
  assert.equal((await api.decryptAndVerify(await token(),opts)).sub,'test-sub');
+ await assert.rejects(()=>token({},'A256GCM').then(t=>api.decryptAndVerify(t,opts)), /not allowed/);
  for(const bad of [{nonce:'wrong'},{iss:'wrong'},{aud:'wrong'},{exp:1},{exp:undefined},{sub:''}]) await assert.rejects(()=>token(bad).then(t=>api.decryptAndVerify(t,opts)));
  const userinfoOpts={tokenUse:'userinfo',jwksUri:opts.jwksUri,expectedIssuer:opts.expectedIssuer,expectedAudience:opts.expectedAudience};
  const userinfo={exp:undefined,nonce:undefined,person_info:{name:{value:'TEST PERSON'}}};
- assert.equal((await api.decryptAndVerify(await token(userinfo),userinfoOpts)).person_info.name.value,'TEST PERSON');
+ assert.equal((await api.decryptAndVerify(await token(userinfo,'A256GCM'),userinfoOpts)).person_info.name.value,'TEST PERSON');
+ await assert.rejects(()=>token(userinfo).then(t=>api.decryptAndVerify(t,userinfoOpts)), /not allowed/);
  const now=Math.floor(Date.now()/1000);
  for(const bad of [{iss:'wrong'},{aud:'wrong'},{sub:''},{iat:undefined},{iat:now-301},{iat:now+60},{exp:1}]) {
-  await assert.rejects(()=>token({...userinfo,...bad}).then(t=>api.decryptAndVerify(t,userinfoOpts)));
+  await assert.rejects(()=>token({...userinfo,...bad},'A256GCM').then(t=>api.decryptAndVerify(t,userinfoOpts)));
  }
  const assertion=decodeJwt(await api.buildClientAssertion(opts.expectedIssuer,'test-client'));assert.equal(assertion.aud,opts.expectedIssuer);assert.equal(assertion.exp-assertion.iat,120);
  const pair=await api.generateDpopKeypair();const one=decodeJwt(await api.buildDpopProof(pair,'GET','https://issuer.test/userinfo',{ath:'hash'}));const two=decodeJwt(await api.buildDpopProof(pair,'GET','https://issuer.test/userinfo',{ath:'hash'}));assert.notEqual(one.jti,two.jti);assert.equal(one.ath,'hash');

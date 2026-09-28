@@ -100,7 +100,8 @@ export async function decryptAndVerify(
   const encKey = await importJWK(singpassEncPrivateJwk(), "ECDH-ES+A256KW");
   const { plaintext } = await compactDecrypt(token, encKey, {
     keyManagementAlgorithms: ["ECDH-ES+A256KW"],
-    contentEncryptionAlgorithms: ["A256GCM"],
+    // Singpass FAPI discovery specifies CBC-HS512 for ID tokens, GCM for UserInfo.
+    contentEncryptionAlgorithms: [opts.tokenUse === "id_token" ? "A256CBC-HS512" : "A256GCM"],
   });
   const innerJwt = new TextDecoder().decode(plaintext);
 
