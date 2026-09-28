@@ -73,6 +73,9 @@ openid uinfin name sex race dob residentialstatus nationality passtype passstatu
 ## Domain and mail
 
 Vercel: apex A `216.198.79.1`, www CNAME `cname.vercel-dns.com`.
+Both hosts serve the site during propagation to prevent a loop with Squarespace's
+cached apex-to-www redirect. After apex DNS has fully propagated, optionally set
+`CANONICAL_DOMAIN_REDIRECT=true` and redeploy to redirect www to apex.
 Google Workspace root MX records are preserved; do not replace them with Resend MX.
 Resend receiving is disabled. Domain-specific DKIM and sending CNAMEs are in Resend's
 domain dashboard and still need saving after Squarespace email-code verification.

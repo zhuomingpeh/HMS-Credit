@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
+    // Leave both hosts usable during Squarespace DNS propagation: its old apex
+    // redirects to www. Enable only after all resolvers reach Vercel for the apex.
+    if (process.env.CANONICAL_DOMAIN_REDIRECT !== "true") return [];
     return [
       {
         source: "/:path*",
