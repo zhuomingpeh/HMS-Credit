@@ -767,3 +767,26 @@ button {
 .myinfo-value { white-space: pre-wrap; padding: 6px 0; }
 .review-consent { display: flex; gap: 12px; margin-bottom: 20px; align-items: flex-start; }
 .review-consent input { width: auto; flex: 0 0 auto; margin-top: 5px; }
+
+/* Compact review: group related fields and keep financial records tabular. */
+.compact-review { max-width: 1120px; }
+.compact-review .card { padding: 20px; margin-bottom: 16px; }
+.compact-review h2 { font-size: 1.1rem; margin: 0 0 14px; }
+.review-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px 20px; }
+.review-grid label { display:block; font-size: .82rem; font-weight:600; margin-bottom:5px; }
+.review-grid input { width:100%; min-height:44px; padding:10px; border:1px solid #aeb7c2; border-radius:6px; background:#fff; box-sizing:border-box; }
+.review-readonly { font-size:.92rem; overflow-wrap:anywhere; line-height:1.5; }
+.review-caption { font-size:.85rem; color:#596575; margin:0 0 12px; }
+.review-table-scroll { overflow-x:auto; }
+.review-table { width:100%; border-collapse:collapse; font-size:.88rem; }
+.review-table th,.review-table td { border:1px solid #d5d8dd; padding:9px 12px; text-align:left; vertical-align:top; }
+.review-table th,.noa-heading { background:#e5e6e8; }
+.review-table th { white-space:nowrap; }
+.noa-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.noa-record { border:1px solid #d5d8dd; font-size:.88rem; }
+.noa-record > div { padding:10px 12px; border-bottom:1px solid #d5d8dd; }
+.noa-record > div:last-child { border-bottom:0; }
+.noa-record ul { margin:7px 0 0; padding-left:22px; }
+.noa-record li { margin:5px 0; }
+@media(max-width:700px) { .review-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .noa-grid { grid-template-columns:1fr; } .compact-review .card { padding:16px; } }
+@media(max-width:420px) { .review-grid { grid-template-columns:1fr; } }

@@ -5,7 +5,7 @@ import { randomBytes } from 'node:crypto';
 import assert from 'node:assert/strict';
 import pg from 'pg';
 import ts from 'typescript';
-const base = 'http://localhost:3015';
+const base = process.env.REVIEW_TEST_URL ?? 'http://localhost:3015';
 async function load(path) {
  const source = await readFile(new URL(path, import.meta.url), 'utf8');
  return import('data:text/javascript;base64,' + Buffer.from(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText).toString('base64'));
@@ -27,15 +27,15 @@ try {
  assert.ok(html.includes('Income') || html.includes('income'));
  const action = html.match(/name="(\$ACTION_ID_[^"]+)"/);
  assert.ok(action, 'Server action must be rendered');
- const form = new FormData(); form.set(action[1], ''); form.set('loanAmount', '1000'); form.set('consent', 'yes');
+ const form = new FormData(); form.set(action[1], ''); form.set('loanAmount', '1000'); form.set('consent', 'yes'); form.set('contactMobile', '+65 91234567'); form.set('contactEmail', 'review@example.test');
  for (const field of reviewFields(rows[0].rawMyInfo).filter(f => f.editable)) form.set(`myinfo:${field.path}`, field.value);
  form.set('myinfo:name.value', 'TAMPERED');
  const response = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.equal(response.status, 303);
  assert.ok(response.headers.get('location').endsWith('/apply/success'));
  assert.equal((await db.query('SELECT count(*)::int AS count FROM "MyinfoDraft" WHERE "tokenHash"=$1', [tokenHash])).rows[0].count, 0);
- const applicant = (await db.query('SELECT name, "hdbOwnership" FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
- assert.notEqual(applicant.name, 'TAMPERED'); assert.equal(applicant.hdbOwnership.length, 2);
+ const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
+ assert.equal(applicant.mobileNumber, '+65 91234567'); assert.equal(applicant.email, 'review@example.test'); assert.notEqual(applicant.name, 'TAMPERED'); assert.equal(applicant.hdbOwnership.length, 2);
  const replay = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.ok(replay.headers.get('location').includes('singpassError'));
  const noCookie = await fetch(base + '/apply/review', { redirect: 'manual' }); assert.equal(noCookie.status, 307);

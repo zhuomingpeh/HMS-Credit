@@ -26,7 +26,10 @@ export async function submitReviewedApplication(form: FormData) {
   let personInfo;
   try { personInfo = applyUserEdits(draft.data.personInfo, form); }
   catch { redirect("/apply/review?error=details"); }
-  const mapped = mapMyInfoToApplicant(personInfo);
+  const contactMobile = String(form.get("contactMobile") ?? "").trim();
+  const contactEmail = String(form.get("contactEmail") ?? "").trim();
+  if (!/^[+\d ()-]{7,30}$/.test(contactMobile) || contactMobile.replace(/\D/g, "").length < 7 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) || contactEmail.length > 254) redirect("/apply/review?error=details");
+  const mapped = { ...mapMyInfoToApplicant(personInfo), mobileNumber: contactMobile, email: contactEmail };
   if (!mapped.nric || !mapped.name || !mapped.residentialStatus) redirect("/apply/review?error=details");
   // JSON round-trip removes undefined object properties without altering zero/false values.
   const json = (value: unknown) => value === undefined ? Prisma.DbNull : JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
