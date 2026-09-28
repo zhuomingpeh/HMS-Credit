@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { readDraft } from "@/lib/singpass/drafts";
 import { fieldLabel, reviewSections } from "@/lib/singpass/reviewFields";
 import { mapMyInfoToApplicant } from "@/lib/singpass/myinfo";
+import { AddressEmployment, HdbDetails } from "./PropertyDetails";
 import { FinancialHistory } from "./FinancialHistory";
 import { cancelApplication, submitReviewedApplication } from "./actions";
 
@@ -32,14 +33,14 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
       </section>
       {[
         { title: "Personal details", keys: ["uinfin", "name", "sex", "race", "dob", "marital", "residentialstatus", "nationality", "passtype", "passstatus", "passexpirydate"] },
-        { title: "Address and employment", keys: ["regadd", "housingtype", "employment", "occupation", "ownerprivate", "vehicles"] },
-        { title: "HDB ownership", keys: ["hdbownership"] },
       ].map(group => <section className="card" key={group.title}><h2>{group.title}</h2><div className="review-grid">
         {sections.filter(s => group.keys.includes(s.key)).flatMap(({key, fields}) => fields.map((field, i) => <div className="review-detail" key={`${field.path}-${i}`}>
           <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label>
           {field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="review-readonly">{field.value || "Not provided"}</div>}
         </div>))}
       </div></section>)}
+      <AddressEmployment info={info} />
+      <HdbDetails info={info} />
       <FinancialHistory info={info} />
       <section className="card">
         <label className="review-consent"><input name="consent" type="checkbox" value="yes" required />
@@ -48,6 +49,6 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
         <button className="button" type="submit">Submit application</button>
       </section>
     </form>
-    <form action={cancelApplication}><button className="button secondary" type="submit">Cancel and delete these details</button></form>
+    <form action={cancelApplication}><button className="button review-cancel" type="submit">Cancel and delete these details</button></form>
   </main>;
 }

@@ -790,3 +790,11 @@ button {
 .noa-record li { margin:5px 0; }
 @media(max-width:700px) { .review-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .noa-grid { grid-template-columns:1fr; } .compact-review .card { padding:16px; } }
 @media(max-width:420px) { .review-grid { grid-template-columns:1fr; } }
+.review-field-label { display:block; font-size:.82rem; font-weight:600; margin-bottom:5px; }
+.review-address { grid-column:1 / -1; }
+.review-property + .review-property { border-top:1px solid #d5d8dd; margin-top:18px; padding-top:18px; }
+.review-property h3 { font-size:.95rem; margin:0 0 12px; }
+.review-grid .review-sub-label { font-weight:400; font-size:.78rem; margin-top:5px; }
+.compact-review .review-cancel { background:#b42318; color:#fff; border:1px solid #b42318; }
+.compact-review .review-cancel:hover { background:#912018; border-color:#912018; }
+.compact-review .review-cancel:focus-visible { outline:3px solid #b42318; outline-offset:3px; }
