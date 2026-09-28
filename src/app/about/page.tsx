@@ -47,10 +47,11 @@ export default function AboutPage() {
         </div>
 
         <Image
-          src="/photos/storefront-full.jpg"
+          src="/photos/storefront-visit.jpg"
           alt="HMS Credit's storefront at #01-08 Sim Lim Square"
-          width={900}
-          height={1474}
+          width={1536}
+          height={2048}
+          sizes="(max-width: 720px) calc(100vw - 48px), 440px"
           className="about-photo"
         />
       </div>
