@@ -88,11 +88,14 @@ const remoteKeySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 
 /** Shared decrypt-then-verify step for both the ID token and the (also JWE-then-JWS) userinfo
  * response: JWE decrypt with our `enc` private key, then JWS verify against Singpass's own
- * published JWKS, then validate iss/aud/exp (jose already enforces exp) and, when supplied,
- * nonce. */
+ * published JWKS. ID tokens require expiry and nonce; UserInfo has no mandatory exp in
+ * Singpass's schema, so enforce freshness using its signed iat instead. */
 export async function decryptAndVerify(
   token: string,
-  opts: { jwksUri: string; expectedIssuer: string; expectedAudience: string; expectedNonce?: string },
+  opts: { jwksUri: string; expectedIssuer: string; expectedAudience: string } & (
+    | { tokenUse: "id_token"; expectedNonce: string }
+    | { tokenUse: "userinfo"; expectedNonce?: never }
+  ),
 ): Promise<VerifiedClaims> {
   const encKey = await importJWK(singpassEncPrivateJwk(), "ECDH-ES+A256KW");
   const { plaintext } = await compactDecrypt(token, encKey);
@@ -108,11 +111,15 @@ export async function decryptAndVerify(
     issuer: opts.expectedIssuer,
     audience: opts.expectedAudience,
     algorithms: ["ES256"],
-    requiredClaims: ["iss", "aud", "sub", "exp", "iat"],
+    requiredClaims: opts.tokenUse === "id_token"
+      ? ["iss", "aud", "sub", "exp", "iat", "nonce"]
+      : ["iss", "aud", "sub", "iat"],
+    // UserInfo is consumed immediately; reject old/future responses even without exp.
+    ...(opts.tokenUse === "userinfo" ? { maxTokenAge: 300 } : {}),
   });
   if (typeof payload.sub !== "string" || !payload.sub) throw new Error("Invalid token subject");
 
-  if (opts.expectedNonce && payload.nonce !== opts.expectedNonce) {
+  if (opts.tokenUse === "id_token" && payload.nonce !== opts.expectedNonce) {
     throw new Error("Singpass response nonce mismatch");
   }
 

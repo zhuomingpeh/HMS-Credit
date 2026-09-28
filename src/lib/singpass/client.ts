@@ -198,6 +198,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
     }
 
     const idTokenClaims = await decryptAndVerify(tokenRes.id_token, {
+      tokenUse: "id_token",
       jwksUri: discovery.jwks_uri,
       expectedIssuer: discovery.issuer,
       expectedAudience: clientId,
@@ -215,6 +216,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
     }, isRetryableUpstreamError);
 
     const userinfoClaims = await decryptAndVerify(userinfoBody, {
+      tokenUse: "userinfo",
       jwksUri: discovery.jwks_uri,
       expectedIssuer: discovery.issuer,
       expectedAudience: clientId,

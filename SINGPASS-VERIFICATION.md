@@ -9,7 +9,9 @@ Registered callback currently used: https://hms-credit.vercel.app/api/auth/singp
 - PAR, PKCE S256, private_key_jwt, ephemeral DPoP key reused per flow.
 - Assertion audience now uses discovery issuer, per official client assertion guide.
 - Fresh assertions and DPoP proofs per attempted request.
-- Required JWT issuer, audience, subject, issue time and expiry; nonce checked for ID token.
+- Required JWT issuer, audience, subject and issue time. ID tokens require expiry/nonce;
+  UserInfo follows the documented schema without mandatory expiry, with a 5-minute iat
+  freshness limit and validation of expiry if supplied.
 - UserInfo subject must match ID-token subject; person_info must be present.
 - No decoded claims in validation errors.
 - Atomic single-use callback session claim.
@@ -24,13 +26,16 @@ Registered callback currently used: https://hms-credit.vercel.app/api/auth/singp
 - Supabase project restored from its paused state on 28 September 2026. A direct pooled
   database connection and SELECT 1 succeeded; no paid plan change was needed.
 - Deployed Apply with Singpass now completes PAR/session creation and reaches the official
-  staging login page for HMS Application. Current portal authentication mode is QR-only.
+  staging login page for HMS Application. Portal now allows 1FA password authentication.
+- Supplied staging account signs in and reaches all 28 requested consent fields. Its
+  UserInfo request returned HTTP 400; no field mapping was reached for this account.
+- Official populated Myinfo persona successfully reached token exchange and encrypted
+  UserInfo response verification. This exposed an incorrect mandatory exp requirement;
+  corrected with a regression test using the documented UserInfo claim shape.
 
 ## Blocked / remaining before production readiness
-- Full staging account login, consent, token exchange and all 28 returned field mappings are
-  NOT yet verified. Configure the staging app Authentication Type as 1FA to use the official
-  populated Myinfo test personas, or authenticate using the staging mobile app for QR tests.
-  Generated staging login accounts do not include Myinfo profile data by default.
+- Retry populated Myinfo persona after the UserInfo exp fix. Successful persistence and all
+  28 returned field mappings are NOT yet verified end-to-end.
 - Portal purpose currently says "application of loan matching"; update to describe direct
   loan applications to HMS Credit before production onboarding.
 - Validate cancelled/expired/replayed callbacks end-to-end.
