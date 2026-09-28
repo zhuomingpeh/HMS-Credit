@@ -33,11 +33,17 @@ try {
  const response = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.equal(response.status, 303);
  assert.ok(response.headers.get('location').endsWith('/apply/success'));
+ const receiptCookie = response.headers.getSetCookie().find(c => c.startsWith('hms_application_receipt='));
+ assert.ok(receiptCookie);
+ const successPage = await fetch(base + '/apply/success', { headers: { cookie: receiptCookie.split(';')[0] }, redirect: 'manual' });
+ assert.equal(successPage.status, 200);
+ assert.ok((await successPage.text()).includes('Your application has been received'));
+
  assert.equal((await db.query('SELECT count(*)::int AS count FROM "MyinfoDraft" WHERE "tokenHash"=$1', [tokenHash])).rows[0].count, 0);
  const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
  assert.equal(applicant.mobileNumber, '+65 91234567'); assert.equal(applicant.email, 'review@example.test'); assert.notEqual(applicant.name, 'TAMPERED'); assert.equal(applicant.hdbOwnership.length, 2);
  const replay = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
- assert.ok(replay.headers.get('location').includes('singpassError'));
+ assert.ok(replay.headers.get('location').includes('reviewError=session'));
  const noCookie = await fetch(base + '/apply/review', { redirect: 'manual' }); assert.equal(noCookie.status, 307);
  // Recreate only the known fixture draft to exercise the cancel action.
  await db.query('INSERT INTO "MyinfoDraft" ("tokenHash", encrypted, "expiresAt") VALUES ($1,$2,$3)', [tokenHash, encryptDraft({ personInfo: rows[0].rawMyInfo, singpassSub: rows[0].singpassSub }), new Date(Date.now() + 900000).toISOString()]);

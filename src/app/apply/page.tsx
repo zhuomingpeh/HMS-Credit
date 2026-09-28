@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default async function ApplyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ singpassError?: string }>;
+  searchParams: Promise<{ singpassError?: string; reviewError?: string }>;
 }) {
-  const { singpassError } = await searchParams;
+  const { singpassError, reviewError } = await searchParams;
   const available = singpassAvailable((await headers()).get("host") ?? "");
 
   return (
@@ -22,6 +22,7 @@ export default async function ApplyPage({
       <h1>Apply Now</h1>
       <p className="subtitle">Apply instantly with Singpass, or fill in the form yourself — whichever&apos;s easier.</p>
 
+      {reviewError && <div className="error-banner" role="alert">This review session has expired or has already been used. If you did not see a confirmation, retrieve your details with Singpass again or use the manual form below.</div>}
       {singpassError && (
         <div className="error-banner">
           Singpass sign-in isn&apos;t available right now. Please fill in the form below instead, or call us at +65

@@ -18,7 +18,7 @@ export async function cancelApplication() {
 
 export async function submitReviewedApplication(form: FormData) {
   const draft = await readDraft();
-  if (!draft) redirect("/apply?singpassError=1");
+  if (!draft) redirect("/apply?reviewError=session");
   const loanAmount = Number(form.get("loanAmount"));
   if (form.get("consent") !== "yes" || !Number.isSafeInteger(loanAmount) || loanAmount < 1 || loanAmount > 1000000) {
     redirect("/apply/review?error=details");
@@ -44,7 +44,7 @@ export async function submitReviewedApplication(form: FormData) {
     if (claimed.count !== 1) return null;
     return tx.applicant.upsert({ where: { singpassSub: data.singpassSub }, create: data, update: data });
   });
-  if (!applicant) redirect("/apply?singpassError=1");
+  if (!applicant) redirect("/apply?reviewError=session");
   const jar = await cookies();
   jar.set(DRAFT_COOKIE, "", { path: "/apply", maxAge: 0 });
   jar.set(RECEIPT_COOKIE, receipt, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/apply/success", maxAge: 300 });

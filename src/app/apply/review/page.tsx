@@ -4,6 +4,7 @@ import { readDraft } from "@/lib/singpass/drafts";
 import { fieldLabel, reviewSections } from "@/lib/singpass/reviewFields";
 import { mapMyInfoToApplicant } from "@/lib/singpass/myinfo";
 import { AddressEmployment, HdbDetails } from "./PropertyDetails";
+import { SubmitReviewButton } from "./SubmitReviewButton";
 import { FinancialHistory } from "./FinancialHistory";
 import { cancelApplication, submitReviewedApplication } from "./actions";
 
@@ -12,15 +13,15 @@ export const dynamic = "force-dynamic";
 
 export default async function ReviewPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const draft = await readDraft();
-  if (!draft) redirect("/apply?singpassError=1");
+  if (!draft) redirect("/apply?reviewError=session");
   const error = (await searchParams).error;
   const info = structuredClone(draft.data.personInfo);
   const mapped = mapMyInfoToApplicant(info);
   const sections = reviewSections(info);
   return <main className="page page-wide compact-review">
     <h1>Review your application</h1>
-    <p>Your Myinfo details are shown below. Government-verified fields cannot be edited here; contact the source agency if they need correction. You can edit user-provided fields.</p>
-    <p>This review expires after 15 minutes. Your application is only submitted when you select “Submit application”.</p>
+    <p className="review-caption">Check your details, then submit. Government-verified details are read-only.</p>
+    <p className="review-caption">For your privacy, this review expires after 15 minutes.</p>
     {error && <p role="alert" className="error-banner">Check your loan amount, editable details and consent before submitting.</p>}
     <form action={submitReviewedApplication}>
       <section className="card"><h2>Loan and contact details</h2>
@@ -46,7 +47,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
         <label className="review-consent"><input name="consent" type="checkbox" value="yes" required />
           <span>I have reviewed my details and consent to HMS CREDIT PTE. LTD. using them to assess and contact me about this loan application, as described in the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. Submission does not guarantee loan approval.</span>
         </label>
-        <button className="button" type="submit">Submit application</button>
+        <SubmitReviewButton />
       </section>
     </form>
     <form action={cancelApplication}><button className="button review-cancel" type="submit">Cancel and delete these details</button></form>
