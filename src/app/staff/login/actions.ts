@@ -28,6 +28,8 @@ export async function requestStaffCode(form: FormData) {
       } catch { console.error("Staff code delivery failed"); }
     }
   }
+  // Convenience only: this cookie grants no access; verification still checks the OTP and allowlist.
+  (await cookies()).set("hms_staff_pending_email", email.slice(0,254), { httpOnly:true, secure:process.env.NODE_ENV === "production", sameSite:"strict", path:"/staff/login", maxAge:600 });
   // Uniform response avoids disclosing staff membership or delivery state.
   redirect("/staff/login?sent=1");
 }
@@ -52,6 +54,7 @@ export async function verifyStaffCode(form: FormData) {
   await prisma.staffSession.create({ data: { tokenHash: staffHash(token), email, expiresAt: new Date(Date.now() + 3600000) } });
   await prisma.staffAudit.create({ data: { email, action: "SIGN_IN" } });
   (await cookies()).set(STAFF_COOKIE, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", path: "/staff", maxAge: 3600 });
+  (await cookies()).set("hms_staff_pending_email", "", { path:"/staff/login", maxAge:0 });
   redirect("/staff");
 }
 
@@ -59,5 +62,10 @@ export async function signOutStaff() {
   const session = await staffSession();
   if (session) await prisma.staffSession.deleteMany({ where: { tokenHash: session.tokenHash } });
   (await cookies()).set(STAFF_COOKIE, "", { path: "/staff", maxAge: 0 });
+  redirect("/staff/login");
+}
+
+export async function changeStaffEmail() {
+  (await cookies()).set("hms_staff_pending_email", "", { path:"/staff/login", maxAge:0 });
   redirect("/staff/login");
 }
