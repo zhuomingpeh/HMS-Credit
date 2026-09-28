@@ -1,4 +1,4 @@
-import Link from "next/link";
+import ApplicationList from "./ApplicationList";
 import { requireStaff } from "@/lib/staff";
 import { prisma } from "@/lib/prisma";
 import { signOutStaff } from "./login/actions";
@@ -11,10 +11,17 @@ export default async function StaffHome() {
     prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 50, select: { id: true, name: true, createdAt: true, loanAmount: true } }),
   ]);
   await prisma.staffAudit.create({ data: { email, action: "VIEW_APPLICATION_LIST" } });
-  return <main className="page"><h1>Applications</h1><p>Signed in as {email}. Showing the 50 most recent records in each category.</p>
-    {process.env.SINGPASS_ENV !== "production" && <p>Singpass is in staging. Myinfo records are test applications.</p>}
-    <h2>Myinfo applications</h2><ul>{applicants.map(a => <li key={a.id}><Link href={`/staff/applicant/${a.id}`} prefetch={false}>{a.name}</Link> — S${a.loanAmount?.toLocaleString("en-SG") ?? "—"} — {a.createdAt.toLocaleDateString("en-SG")}</li>)}</ul>
-    <h2>Manual enquiries</h2><ul>{leads.map(a => <li key={a.id}><Link href={`/staff/lead/${a.id}`} prefetch={false}>{a.name}</Link> — S${a.loanAmount.toLocaleString("en-SG")} — {a.createdAt.toLocaleDateString("en-SG")}</li>)}</ul>
-    <form action={signOutStaff}><button className="button">Sign out</button></form>
+  const staging = process.env.SINGPASS_ENV !== "production";
+  const records = [...applicants.map(a => ({ ...a, kind: "applicant" as const, createdAt: a.createdAt.toISOString() })), ...leads.map(a => ({ ...a, kind: "lead" as const, createdAt: a.createdAt.toISOString() }))].sort((a,b) => b.createdAt.localeCompare(a.createdAt));
+  return <main className="page staff-dashboard">
+    <header className="staff-dashboard-header"><div><span className="staff-login-eyebrow">HMS CREDIT · STAFF PORTAL</span><h1>Applications</h1><p>Review incoming enquiries and borrower details.</p></div><div className="staff-account"><span>{email}</span><form action={signOutStaff}><button className="staff-text-link">Sign out</button></form></div></header>
+    {staging && <aside className="staff-staging"><span className="staff-badge staff-badge-test">TEST MODE</span><p><strong>Myinfo is connected to Singpass staging.</strong> Myinfo records below are test applications. Manual enquiries are live.</p></aside>}
+    <section className="staff-summary" aria-label="Application overview">
+      <div><span>Recent records</span><strong>{records.length}</strong><small>Across both channels</small></div>
+      <div><span>Manual enquiries</span><strong>{leads.length}</strong><small>Website submissions</small></div>
+      <div><span>Myinfo applications</span><strong>{applicants.length}</strong><small>{staging ? "Staging test records" : "Submitted with Singpass"}</small></div>
+    </section>
+    <ApplicationList records={records} staging={staging} />
+    <p className="staff-list-note">Includes up to 50 recent records per channel. Amounts are requested loan amounts.</p>
   </main>;
 }

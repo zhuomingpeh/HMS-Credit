@@ -819,3 +819,75 @@ button {
 .staff-text-link:hover { text-decoration-thickness:2px; }
 .staff-text-link:focus-visible { outline:2px solid var(--brand-navy); outline-offset:4px; }
 @media(max-width:480px) { .page.staff-login { padding:32px 16px 48px; } .staff-login-form { padding:20px; } }
+
+/* Staff application inbox */
+.page.staff-dashboard { max-width:1200px; padding-top:40px; }
+.staff-dashboard-header { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin-bottom:28px; }
+.staff-dashboard-header h1 { font-size:2rem; margin-bottom:8px; }
+.staff-dashboard-header p,.staff-account { color:var(--brand-body); font-size:.9rem; line-height:1.6; }
+.staff-account { text-align:right; overflow-wrap:anywhere; }
+.staff-staging { display:flex; align-items:center; gap:14px; background:#fff9ec; border:1px solid #eeddb4; border-radius:10px; padding:16px 20px; margin-bottom:24px; }
+.staff-staging p { font-size:.84rem; line-height:1.6; color:#695323; }
+.staff-staging strong { font-weight:600; }
+.staff-badge { display:inline-flex; align-items:center; white-space:nowrap; border-radius:6px; padding:5px 9px; font-size:.72rem; font-weight:600; background:#eef1f7; color:#28456c; }
+.staff-badge-test { background:#f7e8c6; color:#72561b; font-size:.66rem; letter-spacing:.06em; }
+.staff-badge-manual { background:#eaf5ed; color:#236e38; }
+.staff-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
+.staff-summary>div { border:1px solid #dfe5ec; border-radius:12px; padding:20px 24px; background:#fff; }
+.staff-summary span,.staff-summary small { display:block; color:var(--brand-body); font-size:.83rem; }
+.staff-summary strong { display:block; font-size:2rem; color:var(--brand-navy); line-height:1.3; margin:10px 0 6px; font-variant-numeric:tabular-nums; }
+.staff-summary small { font-size:.75rem; }
+.staff-inbox { border:1px solid #dfe5ec; border-radius:12px; overflow:hidden; background:#fff; }
+.staff-inbox-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:24px 24px 18px; }
+.staff-inbox-heading h2 { margin:0; font-size:1.15rem; }
+.staff-inbox-heading>span,.staff-result-count,.staff-list-note { font-size:.75rem; color:var(--brand-body); }
+.staff-inbox-controls { padding:0 24px; display:flex; justify-content:space-between; gap:20px; align-items:flex-end; }
+.staff-filters { display:flex; gap:4px; padding:4px; background:#f1f4f8; border-radius:9px; }
+.staff-filters button { border:0; background:transparent; color:#526179; padding:9px 12px; border-radius:6px; font:inherit; font-size:.82rem; cursor:pointer; min-height:40px; }
+.staff-filters button[aria-pressed=true] { background:#fff; color:var(--brand-navy); box-shadow:0 1px 4px #152e4d1c; font-weight:600; }
+.staff-filters button span { margin-left:8px; font-size:.72rem; opacity:.8; }
+.staff-search label { display:block; font-size:.72rem; color:var(--brand-body); margin-bottom:6px; }
+.staff-search input { width:260px; max-width:100%; min-height:44px; padding:10px 12px; border:1px solid #bcc8d6; border-radius:8px; font:inherit; font-size:.88rem; background:#fff; }
+.staff-result-count { padding:16px 24px; overflow-wrap:anywhere; }
+.staff-table { width:100%; border-collapse:collapse; text-align:left; }
+.staff-table th { background:#f6f8fb; padding:13px 20px; font-size:.7rem; color:var(--brand-body); font-weight:600; border-block:1px solid #e4e9f0; }
+.staff-table td { padding:20px; font-size:.83rem; border-bottom:1px solid #edf0f4; vertical-align:middle; }
+.staff-table tr:last-child td { border-bottom:0; }
+.staff-table tbody tr:hover { background:#fafbfd; }
+.staff-applicant-name { color:var(--brand-navy); font-weight:600; line-height:1.5; overflow-wrap:anywhere; }
+.staff-applicant-name:hover { text-decoration:underline; }
+.staff-amount { font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.staff-muted { color:var(--brand-body); font-weight:400; }
+.staff-table time { white-space:nowrap; }
+.staff-table time small { display:block; color:var(--brand-body); font-size:.72rem; margin-top:5px; }
+.staff-open { color:var(--brand-navy); white-space:nowrap; text-decoration:underline; text-underline-offset:3px; font-weight:600; }
+.staff-open span { margin-left:8px; }
+.staff-list-note { margin-top:16px; line-height:1.6; }
+.staff-empty { padding:44px 24px; text-align:center; border-top:1px solid #edf0f4; }
+.staff-empty h3 { font-size:1rem; }
+.staff-empty p { color:var(--brand-body); font-size:.85rem; line-height:1.6; }
+.staff-sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.staff-inbox button:focus-visible,.staff-inbox a:focus-visible,.staff-search input:focus-visible { outline:2px solid var(--brand-navy); outline-offset:3px; }
+@media(max-width:760px) {
+ .staff-dashboard-header { flex-direction:column; gap:12px; }
+ .staff-account { display:flex; align-items:center; gap:16px; text-align:left; font-size:.78rem; }
+ .staff-staging { align-items:flex-start; flex-direction:column; gap:8px; }
+ .staff-summary { gap:8px; }
+ .staff-summary>div { padding:14px 10px; }
+ .staff-summary span { font-size:.7rem; min-height:32px; }
+ .staff-summary strong { font-size:1.65rem; margin:4px 0; }
+ .staff-summary small { font-size:.65rem; }
+ .staff-inbox-heading { align-items:flex-start; flex-direction:column; padding:20px 16px 16px; }
+ .staff-inbox-controls { align-items:stretch; flex-direction:column-reverse; gap:16px; padding:0 16px; }
+ .staff-search input { width:100%; font-size:16px; }
+ .staff-filters button { flex:1; padding-inline:6px; }
+ .staff-result-count { padding:16px; }
+ .staff-table,.staff-table tbody,.staff-table tr,.staff-table td { display:block; }
+ .staff-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+ .staff-table tr { padding:16px; border-top:1px solid #e4e9f0; }
+ .staff-table td { display:flex; justify-content:space-between; gap:16px; padding:7px 0; border:0; text-align:right; }
+ .staff-table td::before { content:attr(data-label); color:var(--brand-body); font-size:.75rem; font-weight:400; text-align:left; }
+ .staff-table td:first-child { display:block; text-align:left; padding-top:0; padding-bottom:12px; font-size:.95rem; }
+ .staff-table td:first-child::before,.staff-open-cell::before { display:none; }
+ .staff-table .staff-open-cell { justify-content:flex-end; padding-top:14px; }
+}
