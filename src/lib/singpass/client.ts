@@ -58,6 +58,19 @@ const SCOPES = [
 
 const RETRYABLE_ERRORS = ["server_error", "upstream_dependency_error", "temporarily_unavailable"];
 
+// Log only documented error codes, never upstream descriptions, tokens or personal data.
+const SAFE_UPSTREAM_CODES = new Set([
+  ...RETRYABLE_ERRORS, "invalid_request", "invalid_token", "invalid_dpop_proof",
+  "invalid_client", "invalid_grant", "invalid_scope", "unauthorized_client",
+]);
+
+async function upstreamError(stage: string, res: Response): Promise<Error> {
+  const body: unknown = await res.json().catch(() => null);
+  const code = body && typeof body === "object" && "error" in body ? body.error : undefined;
+  const safeCode = typeof code === "string" && SAFE_UPSTREAM_CODES.has(code) ? code : "unclassified";
+  return new Error(`${stage} request failed (${res.status}; ${safeCode})`);
+}
+
 /** Retry transient upstream failures up to 3x with backoff before giving up — never leave the
  * applicant stuck mid-flow on a raw error. */
 async function withRetry<T>(fn: () => Promise<T>, isRetryable: (err: unknown) => boolean): Promise<T> {
@@ -90,7 +103,7 @@ async function parRequest(
     body: new URLSearchParams(params).toString(),
   });
   if (!res.ok) {
-    throw new Error(`PAR request failed (${res.status})`);
+    throw await upstreamError("PAR", res);
   }
   return res.json();
 }
@@ -189,7 +202,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
         }).toString(),
       });
       if (!res.ok) {
-        throw new Error(`Token request failed (${res.status})`);
+        throw await upstreamError("Token", res);
       }
       return res.json() as Promise<{ id_token: string; access_token: string }>;
     }, isRetryableUpstreamError);
@@ -210,7 +223,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
         headers: { Authorization: `DPoP ${tokenRes.access_token}`, DPoP: await buildDpopProof(dpop, "GET", discovery.userinfo_endpoint, { ath: accessTokenHash(tokenRes.access_token) }) },
       });
       if (!res.ok) {
-        throw new Error(`Userinfo request failed (${res.status})`);
+        throw await upstreamError("Userinfo", res);
       }
       return res.text();
     }, isRetryableUpstreamError);
