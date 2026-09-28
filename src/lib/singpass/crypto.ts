@@ -83,7 +83,8 @@ export function generateStateOrNonce(): string {
   return base64url(randomBytes(32));
 }
 
-export type VerifiedClaims = Record<string, string> & { iss: string; aud: string | string[]; sub: string };
+export type VerifiedClaims = import("jose").JWTPayload & { sub: string };
+const remoteKeySets = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 
 /** Shared decrypt-then-verify step for both the ID token and the (also JWE-then-JWS) userinfo
  * response: JWE decrypt with our `enc` private key, then JWS verify against Singpass's own
@@ -97,24 +98,19 @@ export async function decryptAndVerify(
   const { plaintext } = await compactDecrypt(token, encKey);
   const innerJwt = new TextDecoder().decode(plaintext);
 
-  const jwks = createRemoteJWKSet(new URL(opts.jwksUri));
-  let payload;
-  try {
-    ({ payload } = await jwtVerify(innerJwt, jwks, {
-      issuer: opts.expectedIssuer,
-      audience: opts.expectedAudience,
-    }));
-  } catch (err) {
-    const [, payloadB64] = innerJwt.split(".");
-    let actualClaims = "<unparseable>";
-    try {
-      actualClaims = Buffer.from(payloadB64, "base64url").toString("utf8");
-    } catch {
-      // leave as <unparseable>
-    }
-    const reason = err instanceof Error ? err.message : String(err);
-    throw new Error(`${reason} — expected iss=${opts.expectedIssuer} aud=${opts.expectedAudience} — actual claims: ${actualClaims}`);
+  let jwks = remoteKeySets.get(opts.jwksUri);
+  if (!jwks) {
+    jwks = createRemoteJWKSet(new URL(opts.jwksUri));
+    remoteKeySets.set(opts.jwksUri, jwks);
   }
+  // Never include decrypted claims or tokens in errors/logs.
+  const { payload } = await jwtVerify(innerJwt, jwks, {
+    issuer: opts.expectedIssuer,
+    audience: opts.expectedAudience,
+    algorithms: ["ES256"],
+    requiredClaims: ["iss", "aud", "sub", "exp", "iat"],
+  });
+  if (typeof payload.sub !== "string" || !payload.sub) throw new Error("Invalid token subject");
 
   if (opts.expectedNonce && payload.nonce !== opts.expectedNonce) {
     throw new Error("Singpass response nonce mismatch");

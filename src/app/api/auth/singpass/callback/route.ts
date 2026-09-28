@@ -1,3 +1,4 @@
+import { createReceipt, RECEIPT_COOKIE } from "@/lib/singpass/receipt";
 import { NextRequest, NextResponse } from "next/server";
 import { completeSingpassAuth } from "@/lib/singpass/client";
 
@@ -20,5 +21,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }
 
-  return NextResponse.redirect(new URL(`/apply/success?id=${result.applicantId}`, request.url));
+  const response = NextResponse.redirect(new URL("/apply/success", request.url));
+  response.cookies.set(RECEIPT_COOKIE, await createReceipt(), {
+    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/apply/success", maxAge: 300,
+  });
+  response.headers.set("Cache-Control", "no-store");
+  return response;
 }

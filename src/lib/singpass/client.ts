@@ -90,8 +90,7 @@ async function parRequest(
     body: new URLSearchParams(params).toString(),
   });
   if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    throw new Error(`PAR request failed (${res.status}): ${body}`);
+    throw new Error(`PAR request failed (${res.status})`);
   }
   return res.json();
 }
@@ -110,13 +109,9 @@ export async function startSingpassAuth(prefill?: { loanAmount?: number; loanTyp
   const { codeVerifier, codeChallenge } = generatePkce();
   const dpop = await generateDpopKeypair();
 
-  // Client assertion `aud` must be the exact endpoint being called (the PAR endpoint here), not
-  // the bare issuer — this is FAPI's private_key_jwt convention (RFC 7523 §3).
-  const clientAssertion = await buildClientAssertion(discovery.pushed_authorization_request_endpoint, clientId);
-  const dpopProof = await buildDpopProof(dpop, "POST", discovery.pushed_authorization_request_endpoint);
-
+  // Client assertion audience is the discovery issuer (Singpass FAPI guide).
   const { request_uri } = await withRetry(
-    () =>
+    async () =>
       parRequest(
         discovery.pushed_authorization_request_endpoint,
         {
@@ -129,9 +124,9 @@ export async function startSingpassAuth(prefill?: { loanAmount?: number; loanTyp
           code_challenge: codeChallenge,
           code_challenge_method: "S256",
           client_assertion_type: CLIENT_ASSERTION_TYPE,
-          client_assertion: clientAssertion,
+          client_assertion: await buildClientAssertion(discovery.issuer, clientId),
         },
-        dpopProof,
+        await buildDpopProof(dpop, "POST", discovery.pushed_authorization_request_endpoint),
       ),
     isRetryableUpstreamError,
   );
@@ -169,33 +164,38 @@ export async function completeSingpassAuth(code: string, state: string): Promise
     publicJwk: session.dpopPublicJwk as Record<string, string>,
   };
 
+  const claimed = await prisma.singpassAuthSession.updateMany({
+    where: { id: session.id, consumedAt: null, createdAt: { gt: new Date(Date.now() - SESSION_TTL_MS) } },
+    data: { consumedAt: new Date() },
+  });
+  if (claimed.count !== 1) return { error: "This sign-in was already used or expired." };
+
   try {
     const discovery = await getSingpassFapiDiscoveryDocument(singpassFapiDiscoveryUrl());
     const clientId = singpassClientId();
     const redirectUri = singpassRedirectUri();
 
-    const clientAssertion = await buildClientAssertion(discovery.token_endpoint, clientId);
-    const tokenDpopProof = await buildDpopProof(dpop, "POST", discovery.token_endpoint);
-
     const tokenRes = await withRetry(async () => {
       const res = await fetch(discovery.token_endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded", DPoP: tokenDpopProof },
+        headers: { "Content-Type": "application/x-www-form-urlencoded", DPoP: await buildDpopProof(dpop, "POST", discovery.token_endpoint) },
         body: new URLSearchParams({
           grant_type: "authorization_code",
           code,
           redirect_uri: redirectUri,
           code_verifier: session.codeVerifier,
           client_assertion_type: CLIENT_ASSERTION_TYPE,
-          client_assertion: clientAssertion,
+          client_assertion: await buildClientAssertion(discovery.issuer, clientId),
         }).toString(),
       });
       if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        throw new Error(`Token request failed (${res.status}): ${body}`);
+        throw new Error(`Token request failed (${res.status})`);
       }
       return res.json() as Promise<{ id_token: string; access_token: string }>;
     }, isRetryableUpstreamError);
+    if (typeof tokenRes.id_token !== "string" || typeof tokenRes.access_token !== "string") {
+      throw new Error("Invalid token response");
+    }
 
     const idTokenClaims = await decryptAndVerify(tokenRes.id_token, {
       jwksUri: discovery.jwks_uri,
@@ -204,17 +204,12 @@ export async function completeSingpassAuth(code: string, state: string): Promise
       expectedNonce: session.nonce,
     });
 
-    const userinfoDpopProof = await buildDpopProof(dpop, "GET", discovery.userinfo_endpoint, {
-      ath: accessTokenHash(tokenRes.access_token),
-    });
-
     const userinfoBody = await withRetry(async () => {
       const res = await fetch(discovery.userinfo_endpoint, {
-        headers: { Authorization: `DPoP ${tokenRes.access_token}`, DPoP: userinfoDpopProof },
+        headers: { Authorization: `DPoP ${tokenRes.access_token}`, DPoP: await buildDpopProof(dpop, "GET", discovery.userinfo_endpoint, { ath: accessTokenHash(tokenRes.access_token) }) },
       });
       if (!res.ok) {
-        const body = await res.text().catch(() => "");
-        throw new Error(`Userinfo request failed (${res.status}): ${body}`);
+        throw new Error(`Userinfo request failed (${res.status})`);
       }
       return res.text();
     }, isRetryableUpstreamError);
@@ -225,7 +220,11 @@ export async function completeSingpassAuth(code: string, state: string): Promise
       expectedAudience: clientId,
     });
 
-    const personInfo = ((userinfoClaims as Record<string, unknown>).person_info ?? userinfoClaims) as MyInfoPersonInfo;
+    if (userinfoClaims.sub !== idTokenClaims.sub) throw new Error("Userinfo subject mismatch");
+    if (!userinfoClaims.person_info || typeof userinfoClaims.person_info !== "object" || Array.isArray(userinfoClaims.person_info)) {
+      throw new Error("Missing Myinfo person_info");
+    }
+    const personInfo = userinfoClaims.person_info as MyInfoPersonInfo;
     const singpassSub = idTokenClaims.sub;
     const mapped = mapMyInfoToApplicant(personInfo);
 

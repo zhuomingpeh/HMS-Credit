@@ -1,8 +1,14 @@
+import { singpassRedirectUri } from "@/lib/singpass/config";
 import { NextRequest, NextResponse } from "next/server";
 import { startSingpassAuth } from "@/lib/singpass/client";
 
 // Plain GET so a link/official button image can point straight here — no client JS needed.
 export async function GET(request: NextRequest) {
+  // Keep the state cookie on the same host as the registered callback.
+  const callbackOrigin = new URL(singpassRedirectUri()).origin;
+  if (request.nextUrl.origin !== callbackOrigin) {
+    return NextResponse.redirect(new URL(request.nextUrl.pathname + request.nextUrl.search, callbackOrigin));
+  }
   const loanAmountRaw = request.nextUrl.searchParams.get("loanAmount");
   const loanType = request.nextUrl.searchParams.get("loanType") ?? undefined;
   const loanAmount = loanAmountRaw ? Number(loanAmountRaw) : undefined;
