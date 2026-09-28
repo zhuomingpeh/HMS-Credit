@@ -46,7 +46,7 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
     email: lead.email,
     loanAmount: lead.loanAmount,
     loanType: lead.loanType ?? undefined,
-  });
+  }).catch(() => console.error("Saved lead notification failed"));
 
   return { ok: true };
 }

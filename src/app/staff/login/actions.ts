@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { allowedStaff, otpHash, STAFF_COOKIE, staffHash, staffSession } from "@/lib/staff";
 
 export async function requestStaffCode(form: FormData) {
+  // A global configuration outage is safe to disclose and must not claim delivery.
+  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) redirect("/staff/login?error=unavailable");
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   if (allowedStaff(email) && process.env.RESEND_API_KEY && process.env.EMAIL_FROM) {
     const code = String(randomInt(10000000, 100000000));

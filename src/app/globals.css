@@ -814,4 +814,8 @@ button {
 .staff-login-form small { font-size:.78rem; }
 .staff-login-notice { margin-bottom:20px; padding:14px 16px; background:#eef6ef; border:1px solid #b9d9bf; border-radius:8px; line-height:1.5; }
 .staff-login-footer { margin-top:24px; text-align:center; font-size:.8rem; }
+.staff-login-links { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 24px; }
+.staff-text-link { appearance:none; border:0; border-radius:0; background:transparent; color:var(--brand-navy); font:inherit; font-size:.9rem; padding:8px 0; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.staff-text-link:hover { text-decoration-thickness:2px; }
+.staff-text-link:focus-visible { outline:2px solid var(--brand-navy); outline-offset:4px; }
 @media(max-width:480px) { .page.staff-login { padding:32px 16px 48px; } .staff-login-form { padding:20px; } }
