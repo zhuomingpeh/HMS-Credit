@@ -39,6 +39,17 @@ try {
  const replay = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.ok(replay.headers.get('location').includes('singpassError'));
  const noCookie = await fetch(base + '/apply/review', { redirect: 'manual' }); assert.equal(noCookie.status, 307);
+ // Recreate only the known fixture draft to exercise the cancel action.
+ await db.query('INSERT INTO "MyinfoDraft" ("tokenHash", encrypted, "expiresAt") VALUES ($1,$2,$3)', [tokenHash, encryptDraft({ personInfo: rows[0].rawMyInfo, singpassSub: rows[0].singpassSub }), new Date(Date.now() + 900000).toISOString()]);
+ const cancelHtml = await (await fetch(base + '/apply/review', { headers: { cookie } })).text();
+ const actions = [...cancelHtml.matchAll(/name="(\$ACTION_ID_[^"]+)"/g)];
+ assert.equal(actions.length, 2);
+ const cancelForm = new FormData(); cancelForm.set(actions[1][1], '');
+ const cancelled = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: cancelForm, redirect: 'manual' });
+ assert.equal(cancelled.status, 303);
+ assert.ok(cancelled.headers.get('location').endsWith('/apply'));
+ assert.equal((await db.query('SELECT count(*)::int AS count FROM "MyinfoDraft" WHERE "tokenHash"=$1', [tokenHash])).rows[0].count, 0);
+ console.log('PASS: cancellation deletes the draft and returns to manual application.');
  const cron = await fetch(base + '/api/cron/cleanup'); assert.equal(cron.status, 401);
  console.log('PASS: protected review, full property display, explicit submission, protected-field tampering ignored, draft consumed once, replay rejected, cleanup requires authorization.');
 } finally {

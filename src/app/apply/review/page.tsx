@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { readDraft } from "@/lib/singpass/drafts";
-import { fieldLabel, reviewFields } from "@/lib/singpass/reviewFields";
+import { fieldLabel, reviewSections } from "@/lib/singpass/reviewFields";
 import { cancelApplication, submitReviewedApplication } from "./actions";
 
 export const metadata: Metadata = { title: "Review Your Application", robots: { index: false, follow: false } };
@@ -21,10 +21,10 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
       <section className="card"><h2>Loan request</h2><label htmlFor="reviewAmount">Loan amount (S$)</label>
         <input id="reviewAmount" name="loanAmount" type="number" min="1" max="1000000" step="1" required defaultValue={draft.data.loanAmount} />
       </section>
-      {Object.entries(info).map(([key, value]) => <section className="card myinfo-section" key={key}>
+      {reviewSections(info).map(({key, fields}) => <section className="card myinfo-section" key={key}>
         <h2>{fieldLabel(key)}</h2>
         {key === "cpfcontributions" && <p>Employment-related contributions only, ordered by paid-on date and contribution month.</p>}
-        {reviewFields(value, key).map((field, i) => <div className="myinfo-field" key={`${field.path}-${i}`}>
+        {fields.map((field, i) => <div className="myinfo-field" key={`${field.path}-${i}`}>
           <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label>
           {field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="myinfo-value">{field.value || "Not provided"}</div>}
           {field.source && <small>{field.source === "2" ? (field.editable ? "User-provided — editable" : "User-provided — read only") : field.source === "1" || field.source === "4" ? "Verified at source" : "Source data"}</small>}

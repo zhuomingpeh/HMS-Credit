@@ -1,3 +1,34 @@
+export const MYINFO_SCOPES = [
+  "uinfin",
+  "name",
+  "sex",
+  "race",
+  "dob",
+  "residentialstatus",
+  "nationality",
+  "passtype",
+  "passstatus",
+  "passexpirydate",
+  "mobileno",
+  "email",
+  "regadd",
+  "housingtype",
+  "cpfcontributions",
+  "noahistory",
+  "ownerprivate",
+  "employment",
+  "occupation",
+  "marital",
+  "vehicles.vehicleno",
+  "hdbownership.noofowners",
+  "hdbownership.address",
+  "hdbownership.hdbtype",
+  "hdbownership.leasecommencementdate",
+  "hdbownership.dateofpurchase",
+  "hdbownership.outstandingloanbalance",
+  "hdbownership.monthlyloaninstalment",
+] as const;
+
 export type ReviewField = { path: string; label: string; value: string; editable: boolean; source?: string };
 const labels: Record<string, string> = {
   uinfin: "NRIC / FIN", name: "Principal name", sex: "Sex", race: "Race", dob: "Date of birth",
@@ -63,4 +94,20 @@ export function applyUserEdits(info: Record<string, unknown>, form: FormData): R
     } else node[leaf] = update;
   }
   return clone;
+}
+
+// Display placeholders without modifying the retrieved payload or making missing data editable.
+export function reviewSections(info: Record<string, unknown>) {
+  const roots = [...new Set(MYINFO_SCOPES.map(scope => scope.split(".")[0]))];
+  return roots.map(key => {
+    const fields = key in info ? reviewFields(info[key], key) : [];
+    for (const scope of MYINFO_SCOPES.filter(scope => scope.split(".")[0] === key)) {
+      const covered = fields.some(field => {
+        const path = field.path.split(".").filter(part => !/^\d+$/.test(part)).join(".");
+        return path === scope || path.startsWith(scope + ".");
+      });
+      if (!covered) fields.push({ path: scope, label: fieldLabel(scope.split(".").at(-1)!), value: "Not available from Myinfo", editable: false });
+    }
+    return { key, fields };
+  });
 }

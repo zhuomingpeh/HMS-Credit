@@ -8,7 +8,7 @@ async function module(path) {
   return import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 }
 const crypto = await module('../src/lib/singpass/draftCrypto.ts');
-const { reviewFields, applyUserEdits } = await module('../src/lib/singpass/reviewFields.ts');
+const { reviewFields, applyUserEdits, reviewSections, MYINFO_SCOPES } = await module('../src/lib/singpass/reviewFields.ts');
 process.env.MYINFO_DRAFT_KEY = randomBytes(32).toString('hex');
 const data = { name: { value: 'TEST PERSON', source: '1' }, email: { value: 'old@example.test', source: '2' },
   cpfcontributions: { source: '1', history: [{ date: { value: '2025-12-01' } }, { date: { value: '2025-01-01' } }] },
@@ -30,3 +30,10 @@ assert.equal(reviewFields({ name: { value: 'TEST', source: '2' } })[0].editable,
 const boolForm = new FormData(); boolForm.set('myinfo:flag.value', 'false');
 assert.equal(applyUserEdits({ flag: { value: true, source: '2' } }, boolForm).flag.value, false);
 console.log('PASS: authenticated draft encryption/tamper rejection; protected fields cannot be edited; CPF ordering preserves original paths; NOA clearance displayed.');
+
+assert.equal(MYINFO_SCOPES.length, 28);
+assert.equal(reviewSections({}).flatMap(s => s.fields).length, 28);
+const missingProperty = reviewSections({ hdbownership: [{ address: { value: "TEST" } }] }).find(s => s.key === "hdbownership");
+assert.ok(missingProperty.fields.some(f => f.path === "hdbownership.monthlyloaninstalment" && !f.editable));
+assert.equal(reviewSections({ email: { value: "a@example.test", source: "2" } }).find(s => s.key === "email").fields[0].editable, true);
+console.log("PASS: all 28 requested scopes remain visible with absent data, including partial property records.");

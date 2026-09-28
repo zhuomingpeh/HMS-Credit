@@ -1,3 +1,4 @@
+import { MYINFO_SCOPES } from "./reviewFields";
 import "server-only";
 import { bindSingpassBrowser, consumeSingpassBrowser } from "./browserBinding";
 import { prisma } from "@/lib/prisma";
@@ -24,37 +25,7 @@ const SESSION_TTL_MS = 10 * 60 * 1000; // 10 minutes — the whole authorize -> 
 // more, no fewer, per Singpass's "don't request what you don't use" principle. Confirmed scope
 // names against Singpass's own docs (2026-09-16), matching Loanify's already-approved usage for
 // every field the two apps share.
-const SCOPES = [
-  "openid",
-  "uinfin",
-  "name",
-  "sex",
-  "race",
-  "dob",
-  "residentialstatus",
-  "nationality",
-  "passtype",
-  "passstatus",
-  "passexpirydate",
-  "mobileno",
-  "email",
-  "regadd",
-  "housingtype",
-  "cpfcontributions",
-  "noahistory",
-  "ownerprivate",
-  "employment",
-  "occupation",
-  "marital",
-  "vehicles.vehicleno",
-  "hdbownership.noofowners",
-  "hdbownership.address",
-  "hdbownership.hdbtype",
-  "hdbownership.leasecommencementdate",
-  "hdbownership.dateofpurchase",
-  "hdbownership.outstandingloanbalance",
-  "hdbownership.monthlyloaninstalment",
-].join(" ");
+const SCOPES = ["openid", ...MYINFO_SCOPES].join(" ");
 
 const RETRYABLE_ERRORS = ["server_error", "upstream_dependency_error", "temporarily_unavailable"];
 
