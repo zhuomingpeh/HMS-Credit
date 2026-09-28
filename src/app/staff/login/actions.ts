@@ -5,11 +5,14 @@ import { randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
 import { allowedStaff, otpHash, STAFF_COOKIE, staffHash, staffSession } from "@/lib/staff";
+import { allowRequest } from "@/lib/rateLimit";
 
 export async function requestStaffCode(form: FormData) {
   // A global configuration outage is safe to disclose and must not claim delivery.
   if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) redirect("/staff/login?error=unavailable");
   const email = String(form.get("email") ?? "").trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) redirect("/staff/login?error=1");
+  if (!await allowRequest("staff-send", email, { ip: 20, identity: 5, seconds: 900 })) redirect("/staff/login?error=limit");
   if (allowedStaff(email) && process.env.RESEND_API_KEY && process.env.EMAIL_FROM) {
     const code = String(randomInt(10000000, 100000000));
     const now = new Date();
@@ -26,8 +29,12 @@ export async function requestStaffCode(form: FormData) {
       try {
         const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({ from: process.env.EMAIL_FROM,
           to: email, subject: "Your HMS Credit staff sign-in code", text: `Your HMS Credit staff sign-in code is ${code}. It expires in 10 minutes. If you did not request this code, ignore this email.` });
-        if (error) console.error("Staff code delivery failed");
-      } catch { console.error("Staff code delivery failed"); }
+        if (error) throw new Error("Delivery failed");
+      } catch {
+        console.error("Staff code delivery failed");
+        await prisma.staffLogin.deleteMany({ where: { email, codeHash: data.codeHash } });
+        // Keep the same public response for unknown and known addresses.
+      }
     }
   }
   // Convenience only: this cookie grants no access; verification still checks the OTP and allowlist.
@@ -39,6 +46,8 @@ export async function requestStaffCode(form: FormData) {
 export async function verifyStaffCode(form: FormData) {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   const code = String(form.get("code") ?? "").trim();
+  if (email.length > 254 || code.length > 8) redirect("/staff/login?error=1");
+  if (!await allowRequest("staff-verify", email, { ip: 40, identity: 10, seconds: 900 })) redirect("/staff/login?error=limit");
   let valid = false;
   if (allowedStaff(email) && /^\d{8}$/.test(code)) {
     const row = await prisma.staffLogin.findUnique({ where: { email } });

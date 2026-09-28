@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import assert from 'node:assert/strict';
 import pg from 'pg';
+import { databaseConfig } from './database-config.mjs';
 import ts from 'typescript';
 const base = process.env.REVIEW_TEST_URL ?? 'http://localhost:3015';
 async function load(path) {
@@ -12,7 +13,7 @@ async function load(path) {
 }
 const { encryptDraft, draftHash } = await load('../src/lib/singpass/draftCrypto.ts');
 const { reviewFields } = await load('../src/lib/singpass/reviewFields.ts');
-const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
+const db = new pg.Client(databaseConfig);
 let tokenHash;
 try {
  await db.connect();

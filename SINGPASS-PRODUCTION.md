@@ -55,10 +55,10 @@ openid uinfin name sex race dob residentialstatus nationality passtype passstatu
 2. Confirm the use case and approved scopes in the portal, and complete required UAT
    evidence. Staging citizen and foreigner retrieval have passed. Repeat the full live
    review/submit journey after deployment, including denial, expiry and callback replay.
-3. Complete Resend DNS verification and a sending-only domain key, set `RESEND_API_KEY`
-   and `EMAIL_FROM=HMS Credit <noreply@hmsmoney.com>`, and test alerts/staff code delivery.
-   Staff recipient/allowlist is `zhuomingpeh@gmail.com`. Do not put full Myinfo payloads
-   or NRIC values into notification emails.
+3. Email setup is complete: verified hmsmoney.com, domain-scoped sending key and
+   `EMAIL_FROM=HMS Credit <noreply@hmsmoney.com>`. Resend confirmed delivery of a staff
+   login code and labelled application test to `zhuomingpeh@gmail.com` on 28 September.
+   Do not put full Myinfo payloads or NRIC values into notification emails.
 4. Business owner must approve retention periods for submitted/abandoned manual
    applications and staff audit logs, privacy/contact wording, access procedures and
    breach response. Current submitted applications do not have automatic deletion.
@@ -77,8 +77,7 @@ Both hosts serve the site during propagation to prevent a loop with Squarespace'
 cached apex-to-www redirect. After apex DNS has fully propagated, optionally set
 `CANONICAL_DOMAIN_REDIRECT=true` and redeploy to redirect www to apex.
 Google Workspace root MX records are preserved; do not replace them with Resend MX.
-Resend receiving is disabled. Domain-specific DKIM and sending CNAMEs are in Resend's
-domain dashboard and still need saving after Squarespace email-code verification.
+Resend receiving is disabled. Domain-specific DKIM and sending CNAMEs are verified.
 Gmail routing has been checked; actual inbound/outbound mailbox delivery is not yet tested.
 
 ## Official references
@@ -89,3 +88,17 @@ Gmail routing has been checked; actual inbound/outbound mailbox delivery is not 
 - https://docs.developer.singpass.gov.sg/docs/getting-started/singpass-button-design-specification
 
 Verification evidence and test scripts are listed in SINGPASS-VERIFICATION.md.
+
+## Security hardening, 28 September evening
+
+The runtime uses a restricted hms_app PostgreSQL role and verifies Supabase's TLS
+certificate. RLS blocks browser roles; hms_app cannot create tables or delete audit
+records. Database-backed throttles protect code sends, verification, manual enquiries
+and Singpass starts. Email-code login is retained at the owner's explicit request;
+it is not MFA. Per-response script nonces, private no-store/noindex headers and
+bounded form inputs are enforced. No known npm advisories remain after tested
+transitive patches. These checks are not an independent penetration-test certification.
+
+The draft user-journey PDF remains a working document until every placeholder is
+replaced with current staging screenshots, including the actual Singpass consent
+screen. Do not submit a placeholder deck as completed evidence.

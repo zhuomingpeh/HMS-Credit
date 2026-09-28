@@ -11,3 +11,5 @@ src/generated/
 .vercel
 .env*
 /design-assets/
+/tmp/
+/output/

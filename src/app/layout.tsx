@@ -3,6 +3,7 @@ import { Poppins, Inter } from "next/font/google";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
+import { headers } from "next/headers";
 
 const headingFont = Poppins({
   variable: "--font-heading",
@@ -33,7 +34,9 @@ export const metadata: Metadata = {
     siteName: "HMS Credit",
     locale: "en_SG",
     type: "website",
+    images: [{ url: "/photos/storefront-entrance.jpg", alt: "HMS Credit storefront at Sim Lim Square" }],
   },
+  twitter: { card: "summary_large_image", images: ["/photos/storefront-entrance.jpg"] },
 };
 
 // Static — no user input — safe to inline via dangerouslySetInnerHTML.
@@ -42,6 +45,10 @@ const organizationJsonLd = {
   "@type": "FinancialService",
   name: "HMS Credit",
   legalName: "HMS CREDIT PTE. LTD.",
+  "@id": "https://hmsmoney.com/#business",
+  logo: "https://hmsmoney.com/logo.webp",
+  image: "https://hmsmoney.com/photos/storefront-entrance.jpg",
+  areaServed: { "@type": "Country", name: "Singapore" },
   url: "https://hmsmoney.com",
   telephone: "+65 6333 9061",
   email: "support@hmsmoney.com",
@@ -59,15 +66,16 @@ const organizationJsonLd = {
   openingHours: "Mo-Sa 11:00-19:00",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`}>
       <body>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }} />
         <SiteNav />
         {children}
         <SiteFooter />

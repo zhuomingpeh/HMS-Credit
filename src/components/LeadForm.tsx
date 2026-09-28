@@ -15,7 +15,7 @@ function SubmitButton() {
 
 const initialState: LeadFormState = { ok: false };
 
-export function LeadForm({ loanType }: { loanType?: string }) {
+export function LeadForm({ loanType, initialAmount }: { loanType?: string; initialAmount?: number }) {
   const [state, action] = useActionState<LeadFormState, FormData>(submitLead, initialState);
 
   if (state.ok) {
@@ -30,22 +30,23 @@ export function LeadForm({ loanType }: { loanType?: string }) {
 
   return (
     <form action={action}>
+      <div className="staff-sr-only" aria-hidden="true"><label>Leave this blank<input name="website" type="text" tabIndex={-1} autoComplete="off" /></label></div>
       {state.error && <div className="error-banner">{state.error}</div>}
       {loanType && <input type="hidden" name="loanType" value={loanType} />}
 
       <div className="field">
         <label htmlFor="name">Name</label>
-        <input id="name" name="name" type="text" required autoComplete="name" />
+        <input id="name" name="name" type="text" required maxLength={150} autoComplete="name" />
       </div>
 
       <div className="field">
         <label htmlFor="phone">Phone</label>
-        <input id="phone" name="phone" type="tel" required autoComplete="tel" placeholder="9123 4567" />
+        <input id="phone" name="phone" type="tel" required maxLength={30} autoComplete="tel" placeholder="9123 4567" />
       </div>
 
       <div className="field">
         <label htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" required autoComplete="email" />
+        <input id="email" name="email" type="email" required maxLength={254} autoComplete="email" />
       </div>
 
       <div className="field">
@@ -62,10 +63,11 @@ export function LeadForm({ loanType }: { loanType?: string }) {
 
       <div className="field">
         <label htmlFor="loanAmount">Loan amount</label>
-        <input id="loanAmount" name="loanAmount" type="number" min={500} step={100} required placeholder="$" />
+        <input id="loanAmount" name="loanAmount" type="number" min={500} max={1000000} step={1} defaultValue={initialAmount} required placeholder="$" />
       </div>
 
       <SubmitButton />
+      <p className="form-privacy-note">By submitting, you agree to be contacted about this enquiry as described in our <a href="/privacy">Privacy Policy</a>. Submission does not guarantee approval.</p>
     </form>
   );
 }

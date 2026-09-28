@@ -10,5 +10,6 @@ export async function GET(request: NextRequest) {
   const sessions = await prisma.singpassAuthSession.deleteMany({ where: { createdAt: { lt: new Date(Date.now() - 600000) } } });
   await prisma.staffLogin.deleteMany({ where: { expiresAt: { lt: new Date() } } });
   await prisma.staffSession.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+  await prisma.$executeRaw`DELETE FROM "RateLimit" WHERE "expiresAt" < NOW()`;
   return NextResponse.json({ drafts: drafts.count, sessions: sessions.count });
 }

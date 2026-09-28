@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  openGraph: { title: "Terms of Service | HMS Credit", description: "Terms of use for the HMS Credit website.", url: "https://hmsmoney.com/terms", images: ["/photos/storefront-entrance.jpg"] },
+  alternates: { canonical: "/terms" },
   title: "Terms of Service",
   description: "Terms of use for the HMS Credit website.",
 };

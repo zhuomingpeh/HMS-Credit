@@ -2,10 +2,11 @@ import 'dotenv/config';
 import assert from 'node:assert/strict';
 import { createHmac, createHash, randomInt } from 'node:crypto';
 import pg from 'pg';
+import { databaseConfig } from './database-config.mjs';
 const base = process.env.STAFF_TEST_URL ?? 'http://localhost:3016';
 const email = process.env.STAFF_EMAILS?.split(',')[0]?.trim();
 assert.ok(email && process.env.STAFF_AUTH_SECRET);
-const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
+const db = new pg.Client(databaseConfig);
 let sessionHash;
 try {
  await db.connect();
@@ -15,7 +16,7 @@ try {
  assert.equal((initial.match(/type="email"/g) ?? []).length, 1);
  const page = await (await fetch(base + '/staff/login', { headers: {cookie: `hms_staff_pending_email=${encodeURIComponent(email)}`} })).text();
  assert.equal((page.match(/type="email"/g) ?? []).length, 0);
- assert.ok(page.includes('Use a different email'));
+ assert.ok(page.includes('Change email'));
  const actions = [...page.matchAll(/name="(\$ACTION_ID_[^"]+)"/g)].map(x => x[1]);
  assert.equal(actions.length, 3);
  const code = String(randomInt(10000000,100000000));

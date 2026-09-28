@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { sendNewLeadAdminEmail } from "@/lib/email";
 import type { Residency } from "@/generated/prisma/enums";
+import { allowRequest } from "@/lib/rateLimit";
 
 export type LeadFormState = {
   ok: boolean;
@@ -20,6 +21,8 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
   const residencyRaw = String(formData.get("residency") ?? "");
   const loanAmountRaw = String(formData.get("loanAmount") ?? "");
   const loanType = String(formData.get("loanType") ?? "").trim() || undefined;
+  if (formData.get("website")) return { ok: true };
+  if (name.length > 150 || phone.length > 30 || email.length > 254 || (loanType?.length ?? 0) > 100) return { ok: false, error: "Please check your details and try again." };
 
   if (!name) return { ok: false, error: "Please enter your name." };
   if (!SG_PHONE_RE.test(phone.replace(/[\s-]/g, ""))) return { ok: false, error: "Please enter a valid Singapore phone number." };
@@ -27,7 +30,8 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
   if (!RESIDENCY_VALUES.includes(residencyRaw as Residency)) return { ok: false, error: "Please select your residency status." };
 
   const loanAmount = Number(loanAmountRaw);
-  if (!Number.isFinite(loanAmount) || loanAmount <= 0) return { ok: false, error: "Please enter a loan amount." };
+  if (!Number.isSafeInteger(loanAmount) || loanAmount < 500 || loanAmount > 1000000) return { ok: false, error: "Please enter a loan amount between S$500 and S$1,000,000." };
+  if (!await allowRequest("lead-submit", email.toLowerCase(), { ip: 10, identity: 3, seconds: 900 })) return { ok: false, error: "Too many submissions. Please wait 15 minutes or call us for assistance." };
 
   const lead = await prisma.lead.create({
     data: {

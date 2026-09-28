@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  openGraph: { title: "FAQ | HMS Credit", description: "Frequently asked questions about borrowing from HMS Credit, a licensed moneylender in Singapore.", url: "https://hmsmoney.com/faq", images: ["/photos/storefront-entrance.jpg"] },
+  alternates: { canonical: "/faq" },
   title: "FAQ",
   description: "Frequently asked questions about borrowing from HMS Credit, a licensed moneylender in Singapore.",
 };

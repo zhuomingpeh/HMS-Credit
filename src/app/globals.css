@@ -891,3 +891,60 @@ button {
  .staff-table td:first-child::before,.staff-open-cell::before { display:none; }
  .staff-table .staff-open-cell { justify-content:flex-end; padding-top:14px; }
 }
+
+.form-privacy-note { margin-top:12px; font-size:.72rem; line-height:1.6; color:var(--brand-body); }
+.form-privacy-note a { text-decoration:underline; }
+.repayment-calculator { display:grid; grid-template-columns:1.15fr 1fr; border:1px solid #dce5ec; border-radius:20px; overflow:hidden; box-shadow:0 12px 38px #10284609; margin-top:32px; }
+.calculator-inputs { padding:36px; background:#fff; }
+.calculator-inputs h2 { font-size:1.2rem; line-height:1.5; margin-bottom:8px; }
+.calculator-inputs>p { color:var(--brand-body); font-size:.86rem; line-height:1.7; }
+.calculator-control { margin-top:30px; }
+.calculator-control label { font-weight:600; color:var(--brand-heading); font-size:.87rem; }
+.calculator-label-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.calculator-label-row output { color:var(--brand-navy); font-weight:700; white-space:nowrap; }
+.calculator-amount-input { display:flex; gap:10px; align-items:center; border:1px solid #bac8d8; border-radius:10px; margin:12px 0 16px; padding:12px 16px; }
+.calculator-amount-input>span { color:var(--brand-body); font-size:1.1rem; }
+.calculator-amount-input input { border:0; padding:0; width:100%; min-width:0; font:inherit; font-size:1.65rem; font-weight:600; color:var(--brand-navy); background:transparent; }
+.calculator-amount-input:focus-within { outline:2px solid var(--brand-navy); outline-offset:2px; }
+.calculator-amount-input input:focus { outline:0; }
+.calculator-control input[type=range] { accent-color:var(--brand-green); width:100%; height:28px; cursor:pointer; padding:0; }
+.calculator-range-labels { display:flex; justify-content:space-between; color:var(--brand-body); font-size:.72rem; margin-top:5px; }
+.calculator-presets { display:flex; gap:8px; margin-top:12px; }
+.calculator-presets button { flex:1; min-height:40px; border:1px solid #dce3eb; background:#fff; color:var(--brand-body); border-radius:7px; font:inherit; font-size:.75rem; cursor:pointer; }
+.calculator-presets button[aria-pressed=true] { background:#edf7ef; border-color:#63af75; color:#206933; font-weight:700; }
+.calculator-hint { font-size:.73rem; line-height:1.6; color:var(--brand-body); margin-top:14px; }
+.calculator-estimate { padding:40px 32px; background:linear-gradient(145deg,#123262,#0c2148); color:#fff; display:flex; flex-direction:column; justify-content:center; }
+.calculator-estimate-tag { font-size:.64rem; letter-spacing:.09em; font-weight:600; color:#b9deca; }
+.calculator-monthly-label { font-size:.9rem; color:#d0dced; margin-top:24px; }
+.calculator-monthly { font-size:clamp(2.2rem,4.5vw,3.1rem); font-weight:700; letter-spacing:-.04em; font-variant-numeric:tabular-nums; margin:8px 0; }
+.calculator-monthly>span { font-size:1rem; vertical-align:super; margin-right:8px; color:#d0dced; letter-spacing:0; }
+.calculator-monthly-caption { color:#c6d4e8; font-size:.78rem; }
+.calculator-composition { height:8px; background:#7291b9; border-radius:8px; margin:28px 0 20px; overflow:hidden; }
+.calculator-composition span { display:block; height:100%; background:#53cb76; }
+.calculator-breakdown>div { display:flex; justify-content:space-between; gap:16px; padding:10px 0; font-size:.85rem; }
+.calculator-breakdown dt { color:#d0dced; }
+.calculator-breakdown dd { font-weight:600; font-variant-numeric:tabular-nums; }
+.calculator-breakdown .calculator-total { border-top:1px solid #ffffff30; margin-top:8px; padding-top:18px; }
+.calculator-total dt { color:#fff; font-weight:600; }
+.calculator-estimate .button { display:flex; justify-content:space-between; align-items:center; margin-top:26px; font-size:.87rem; min-height:50px; }
+.calculator-estimate-note { font-size:.72rem; line-height:1.7; color:#c6d4e8; margin-top:16px; }
+.calculator-schedule { margin-top:20px; border:1px solid #dce5ec; border-radius:12px; background:#fff; }
+.calculator-schedule summary { padding:20px 24px; cursor:pointer; font-weight:600; font-size:.86rem; }
+.calculator-schedule summary span { float:right; font-size:.75rem; font-weight:400; color:var(--brand-body); }
+.calculator-schedule-scroll { overflow-x:auto; padding:0 20px 20px; }
+.calculator-schedule table { width:100%; min-width:520px; border-collapse:collapse; font-size:.78rem; text-align:right; font-variant-numeric:tabular-nums; }
+.calculator-schedule th,.calculator-schedule td { padding:12px; border-bottom:1px solid #e6ecf2; }
+.calculator-schedule thead { background:#f4f7fa; }
+.calculator-schedule caption { text-align:left; color:var(--brand-body); padding:0 0 16px; line-height:1.6; }
+.calculator-footnote { margin-top:20px; color:var(--brand-body); font-size:.76rem; line-height:1.8; }
+.calculator-presets button:focus-visible,.calculator-schedule summary:focus-visible { outline:2px solid var(--brand-navy); outline-offset:3px; }
+.loan-card { transition:box-shadow .2s, border-color .2s; }
+.loan-card:hover { border-color:#92b39d; box-shadow:0 8px 22px #1028460c; }
+@media(max-width:700px) {
+ .repayment-calculator { grid-template-columns:1fr; border-radius:14px; }
+ .calculator-inputs,.calculator-estimate { padding:24px; }
+ .calculator-monthly { font-size:2.8rem; }
+ .calculator-schedule summary { padding:18px; line-height:1.6; }
+ .calculator-schedule summary span { float:none; display:block; margin-top:6px; }
+ .calculator-presets { gap:6px; }
+}

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { LOAN_TYPES } from "@/lib/loans";
 
 export const metadata: Metadata = {
+  openGraph: { title: "Our Loans | HMS Credit", description: "Personal, foreigner, wedding, business and education loans from HMS Credit, a licensed moneylender in Singapore.", url: "https://hmsmoney.com/loans", images: ["/photos/storefront-entrance.jpg"] },
+  alternates: { canonical: "/loans" },
   title: "Our Loans",
   description: "Personal, foreigner, wedding, business and education loans from HMS Credit, a licensed moneylender in Singapore.",
 };

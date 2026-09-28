@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  openGraph: { title: "Privacy Policy | HMS Credit", description: "How HMS Credit collects, uses, and protects borrower information.", url: "https://hmsmoney.com/privacy", images: ["/photos/storefront-entrance.jpg"] },
+  alternates: { canonical: "/privacy" },
   title: "Privacy Policy",
   description: "How HMS Credit collects, uses, and protects borrower information.",
 };

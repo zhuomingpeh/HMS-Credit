@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const state = request.nextUrl.searchParams.get("state");
   const error = request.nextUrl.searchParams.get("error");
 
-  if (error || !code || !state) {
+  if (error || !code || !state || code.length > 4096 || !/^[A-Za-z0-9_-]{43}$/.test(state)) {
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }
 

@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import { singpassAvailable } from "@/lib/singpass/availability";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/apply" },
+  robots: { index: false, follow: false },
   title: "Apply Now",
   description: "Apply for a loan with HMS Credit — instantly with Singpass, or fill in the form manually.",
 };
@@ -12,9 +14,11 @@ export const metadata: Metadata = {
 export default async function ApplyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ singpassError?: string; reviewError?: string }>;
+  searchParams: Promise<{ singpassError?: string; reviewError?: string; loanAmount?: string }>;
 }) {
-  const { singpassError, reviewError } = await searchParams;
+  const { singpassError, reviewError, loanAmount } = await searchParams;
+  const parsedAmount = Number(loanAmount);
+  const initialAmount = Number.isSafeInteger(parsedAmount) && parsedAmount >= 500 && parsedAmount <= 1000000 ? parsedAmount : undefined;
   const available = singpassAvailable((await headers()).get("host") ?? "");
 
   return (
@@ -37,12 +41,12 @@ export default async function ApplyPage({
             Singapore Citizens, Permanent Residents and eligible FIN holders can retrieve their details
             with Myinfo, review them, and submit a loan application to HMS Credit.
           </p>
-          {available ? <><SingpassButton />{process.env.SINGPASS_ENV !== "production" && <p>Testing environment — use official Singpass test accounts only.</p>}</> : <p>Singpass applications will be available after production approval. Please use the manual form to contact our team.</p>}
+          {available ? <><SingpassButton href={initialAmount ? `/api/auth/singpass/start?loanAmount=${initialAmount}` : undefined} />{process.env.SINGPASS_ENV !== "production" && <p>Testing environment — use official Singpass test accounts only.</p>}</> : <p>Singpass applications will be available after production approval. Please use the manual form to contact our team.</p>}
         </div>
 
         <div className="card">
           <h2>Apply Manually</h2>
-          <LeadForm />
+          <LeadForm initialAmount={initialAmount} />
         </div>
       </div>
     </main>

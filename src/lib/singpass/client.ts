@@ -70,6 +70,7 @@ async function parRequest(
 ): Promise<{ request_uri: string }> {
   const res = await fetch(parUrl, {
     method: "POST",
+    signal: AbortSignal.timeout(15000), redirect: "error",
     headers: { "Content-Type": "application/x-www-form-urlencoded", DPoP: dpopProof },
     body: new URLSearchParams(params).toString(),
   });
@@ -167,6 +168,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
     const tokenRes = await withRetry(async () => {
       const res = await fetch(discovery.token_endpoint, {
         method: "POST",
+    signal: AbortSignal.timeout(15000), redirect: "error",
         headers: { "Content-Type": "application/x-www-form-urlencoded", DPoP: await buildDpopProof(dpop, "POST", discovery.token_endpoint) },
         body: new URLSearchParams({
           grant_type: "authorization_code",
@@ -196,6 +198,7 @@ export async function completeSingpassAuth(code: string, state: string): Promise
 
     const userinfoBody = await withRetry(async () => {
       const res = await fetch(discovery.userinfo_endpoint, {
+        signal: AbortSignal.timeout(15000), redirect: "error",
         headers: { Authorization: `DPoP ${tokenRes.access_token}`, DPoP: await buildDpopProof(dpop, "GET", discovery.userinfo_endpoint, { ath: accessTokenHash(tokenRes.access_token) }) },
       });
       if (!res.ok) {

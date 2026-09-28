@@ -3,6 +3,8 @@ import Image from "next/image";
 import { LeadForm } from "@/components/LeadForm";
 
 export const metadata: Metadata = {
+  openGraph: { title: "Contact Us | HMS Credit", description: "Get in touch with HMS Credit — call, visit, or apply online.", url: "https://hmsmoney.com/contact", images: ["/photos/storefront-entrance.jpg"] },
+  alternates: { canonical: "/contact" },
   title: "Contact Us",
   description: "Get in touch with HMS Credit — call, visit, or apply online.",
 };

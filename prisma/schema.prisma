@@ -186,3 +186,10 @@ model StaffAudit {
   recordId String?
   createdAt DateTime @default(now())
 }
+
+model RateLimit {
+  key String @id
+  count Int @default(1)
+  expiresAt DateTime
+  @@index([expiresAt])
+}

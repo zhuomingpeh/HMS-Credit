@@ -13,6 +13,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!loan) return {};
   return {
     title: loan.name,
+    alternates: { canonical: `/loans/${loan.slug}` },
+    openGraph: { title: `${loan.name} | HMS Credit`, description: loan.description, url: `https://hmsmoney.com/loans/${loan.slug}`, images: ["/photos/storefront-entrance.jpg"] },
     description: loan.description,
   };
 }

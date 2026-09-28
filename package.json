@@ -35,5 +35,11 @@
     "@prisma/engines@7.9.0": true,
     "prisma@7.9.0": true,
     "unrs-resolver@1.12.2": true
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "find-my-way": "9.9.0",
+    "valibot": "1.5.0",
+    "mysql2": "3.24.4"
   }
 }

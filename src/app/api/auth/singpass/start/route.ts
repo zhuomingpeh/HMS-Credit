@@ -2,6 +2,7 @@ import { singpassRedirectUri } from "@/lib/singpass/config";
 import { NextRequest, NextResponse } from "next/server";
 import { startSingpassAuth } from "@/lib/singpass/client";
 import { singpassAvailable } from "@/lib/singpass/availability";
+import { takeRateLimit, requestIp } from "@/lib/rateLimit";
 
 // Plain GET so a link/official button image can point straight here — no client JS needed.
 export async function GET(request: NextRequest) {
@@ -16,6 +17,8 @@ export async function GET(request: NextRequest) {
   const loanAmount = loanAmountRaw ? Number(loanAmountRaw) : undefined;
 
   try {
+    if (!await takeRateLimit("singpass-start", await requestIp(), 10, 900)) return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
+    if ((loanType?.length ?? 0) > 100 || (loanAmount !== undefined && (!Number.isSafeInteger(loanAmount) || loanAmount < 1 || loanAmount > 1000000))) return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
     const { redirectUrl } = await startSingpassAuth({
       loanAmount: Number.isFinite(loanAmount) ? loanAmount : undefined,
       loanType,

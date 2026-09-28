@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const securityHeaders = [
-  { key: "Content-Security-Policy", value: "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -10,6 +9,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  experimental: { serverActions: { bodySizeLimit: "128kb" } },
   async headers() {
     return [
       {

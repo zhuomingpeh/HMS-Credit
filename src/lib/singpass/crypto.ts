@@ -98,7 +98,10 @@ export async function decryptAndVerify(
   ),
 ): Promise<VerifiedClaims> {
   const encKey = await importJWK(singpassEncPrivateJwk(), "ECDH-ES+A256KW");
-  const { plaintext } = await compactDecrypt(token, encKey);
+  const { plaintext } = await compactDecrypt(token, encKey, {
+    keyManagementAlgorithms: ["ECDH-ES+A256KW"],
+    contentEncryptionAlgorithms: ["A256GCM"],
+  });
   const innerJwt = new TextDecoder().decode(plaintext);
 
   let jwks = remoteKeySets.get(opts.jwksUri);

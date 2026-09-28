@@ -5,6 +5,8 @@ import { TrustBar } from "@/components/TrustBar";
 import { LOAN_TYPES } from "@/lib/loans";
 import { SingpassButton } from "@/components/SingpassButton";
 
+export const metadata = { alternates: { canonical: "/" } };
+
 export default function Home() {
   return (
     <>
@@ -29,7 +31,7 @@ export default function Home() {
             </p>
             <div className="home-hero-cta-row">
               <Link href="/loan-calculator" className="button button-secondary">
-                Loan Qualification Calculator
+                Loan Repayment Calculator
               </Link>
               <a href="tel:+6563339061" className="button button-secondary">
                 Call +65 6333 9061
@@ -68,7 +70,7 @@ export default function Home() {
       </section>
 
       <section className="page page-wide">
-        <h2>2 steps away from your loan approval</h2>
+        <h2>How to apply</h2>
         <div className="steps-grid">
           <div className="card">
             <span className="step-badge">1</span>
@@ -81,7 +83,7 @@ export default function Home() {
           <div className="card">
             <span className="step-badge">2</span>
             <h3>Visit our office to complete your loan</h3>
-            <p>After your application is processed, visit us to fill in the mandatory forms and your loan will be issued.</p>
+            <p>Visit our office for identity checks, assessment and an explanation of the terms. Any loan is subject to approval.</p>
           </div>
         </div>
       </section>
