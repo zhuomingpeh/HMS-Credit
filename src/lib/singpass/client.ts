@@ -14,7 +14,7 @@ import {
   type DpopKeypair,
 } from "./crypto";
 import { mapMyInfoToApplicant, type MyInfoPersonInfo } from "./myinfo";
-import { sendNewApplicantAdminEmail } from "@/lib/email";
+import { createDraft } from "./drafts";
 import { Prisma } from "@/generated/prisma/client";
 
 const CLIENT_ASSERTION_TYPE = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
@@ -165,7 +165,7 @@ export async function startSingpassAuth(prefill?: { loanAmount?: number; loanTyp
   return { redirectUrl };
 }
 
-export type CompleteSingpassAuthResult = { applicantId: string } | { error: string };
+export type CompleteSingpassAuthResult = { reviewToken: string } | { error: string };
 
 export async function completeSingpassAuth(code: string, state: string): Promise<CompleteSingpassAuthResult> {
   if (!(await consumeSingpassBrowser(state))) return { error: "Sign-in browser mismatch. Please start again." };
@@ -252,77 +252,9 @@ export async function completeSingpassAuth(code: string, state: string): Promise
       return { error: "Singpass didn't return enough information to complete an application. Please try again or apply manually." };
     }
 
-    // One Applicant per singpassSub — a repeat application from the same identity updates the
-    // existing row (fresh MyInfo pull) rather than creating a duplicate for staff to dedupe.
-    const applicant = await prisma.applicant.upsert({
-      where: { singpassSub },
-      create: {
-        singpassSub,
-        nric: mapped.nric,
-        name: mapped.name,
-        sex: mapped.sex,
-        race: mapped.race,
-        dateOfBirth: mapped.dateOfBirth,
-        residentialStatus: mapped.residentialStatus,
-        nationality: mapped.nationality,
-        passType: mapped.passType,
-        passStatus: mapped.passStatus,
-        passExpiryDate: mapped.passExpiryDate,
-        mobileNumber: mapped.mobileNumber,
-        email: mapped.email,
-        address: mapped.address as Prisma.InputJsonValue,
-        housingType: mapped.housingType,
-        ownsPrivateProperty: mapped.ownsPrivateProperty,
-        employerName: mapped.employerName,
-        occupation: mapped.occupation,
-        maritalStatus: mapped.maritalStatus,
-        vehicleNumbers: mapped.vehicleNumbers,
-        hdbOwnership: mapped.hdbOwnership as Prisma.InputJsonValue,
-        cpfContributions: mapped.cpfContributions as unknown as Prisma.InputJsonValue,
-        noticeOfAssessments: mapped.noticeOfAssessments as unknown as Prisma.InputJsonValue,
-        rawMyInfo: personInfo as Prisma.InputJsonValue,
-        loanAmount: session.loanAmount,
-        loanType: session.loanType,
-      },
-      update: {
-        nric: mapped.nric,
-        name: mapped.name,
-        sex: mapped.sex,
-        race: mapped.race,
-        dateOfBirth: mapped.dateOfBirth,
-        residentialStatus: mapped.residentialStatus,
-        nationality: mapped.nationality,
-        passType: mapped.passType,
-        passStatus: mapped.passStatus,
-        passExpiryDate: mapped.passExpiryDate,
-        mobileNumber: mapped.mobileNumber,
-        email: mapped.email,
-        address: mapped.address as Prisma.InputJsonValue,
-        housingType: mapped.housingType,
-        ownsPrivateProperty: mapped.ownsPrivateProperty,
-        employerName: mapped.employerName,
-        occupation: mapped.occupation,
-        maritalStatus: mapped.maritalStatus,
-        vehicleNumbers: mapped.vehicleNumbers,
-        hdbOwnership: mapped.hdbOwnership as Prisma.InputJsonValue,
-        cpfContributions: mapped.cpfContributions as unknown as Prisma.InputJsonValue,
-        noticeOfAssessments: mapped.noticeOfAssessments as unknown as Prisma.InputJsonValue,
-        rawMyInfo: personInfo as Prisma.InputJsonValue,
-        loanAmount: session.loanAmount ?? undefined,
-        loanType: session.loanType ?? undefined,
-      },
-    });
-
-    await prisma.singpassAuthSession.update({ where: { id: session.id }, data: { consumedAt: new Date() } });
-
-    await sendNewApplicantAdminEmail({
-      name: applicant.name,
-      residentialStatus: applicant.residentialStatus,
-      loanAmount: applicant.loanAmount ?? undefined,
-      loanType: applicant.loanType ?? undefined,
-    });
-
-    return { applicantId: applicant.id };
+    const reviewToken = await createDraft({ personInfo, singpassSub,
+      loanAmount: session.loanAmount ?? undefined, loanType: session.loanType ?? undefined });
+    return { reviewToken };
   } catch (err) {
     await prisma.singpassAuthSession.update({ where: { id: session.id }, data: { consumedAt: new Date() } }).catch(() => {});
     const message = err instanceof Error ? err.message : "Unknown error";

@@ -1,0 +1,66 @@
+export type ReviewField = { path: string; label: string; value: string; editable: boolean; source?: string };
+const labels: Record<string, string> = {
+  uinfin: "NRIC / FIN", name: "Principal name", sex: "Sex", race: "Race", dob: "Date of birth",
+  residentialstatus: "Residential status", nationality: "Nationality / citizenship", passtype: "Pass type",
+  passstatus: "Pass status", passexpirydate: "Pass expiry date", mobileno: "Mobile number", email: "Email",
+  regadd: "Registered address", housingtype: "Housing type", cpfcontributions: "CPF contribution history",
+  noahistory: "Notice of Assessment history", ownerprivate: "Ownership of private residential property",
+  employment: "Employment income / employer", occupation: "Occupation", marital: "Marital status",
+  vehicles: "Vehicles", vehicleno: "Vehicle number", hdbownership: "HDB ownership", noofowners: "Number of owners",
+  address: "Address", hdbtype: "HDB dwelling type", leasecommencementdate: "Lease commencement date",
+  dateofpurchase: "Date of purchase", outstandingloanbalance: "Outstanding HDB loan balance (S$)",
+  monthlyloaninstalment: "Monthly HDB loan instalment (S$)", date: "Paid on", month: "For month",
+  employer: "Employer", amount: "Amount (S$)", category: "Type", yearofassessment: "Year of Assessment",
+  taxclearance: "Tax clearance", trade: "Trade income (S$)", rent: "Rental income (S$)", interest: "Interest income (S$)",
+  prefix: "Prefix", areacode: "Country code", nbr: "Number", block: "Block", street: "Street", building: "Building",
+  floor: "Floor", unit: "Unit", postal: "Postal code", country: "Country", type: "Type", line1: "Address line 1", line2: "Address line 2",
+};
+export const fieldLabel = (key: string) => labels[key] ?? key;
+
+// Traverse every returned field, retaining source-based editability and original values.
+export function reviewFields(data: unknown, path = "", parentSource?: string, prefix = ""): ReviewField[] {
+  if (data == null) return [{ path, label: prefix, value: "Not available", editable: false }];
+  if (Array.isArray(data)) {
+    const rows = data.map((row, i) => ({ row, i }));
+    if (path === "cpfcontributions.history") rows.sort((a, b) =>
+      String(a.row?.date?.value ?? "").localeCompare(String(b.row?.date?.value ?? "")) ||
+      String(a.row?.month?.value ?? "").localeCompare(String(b.row?.month?.value ?? "")));
+    return rows.length ? rows.flatMap(({ row, i }, displayIndex) => reviewFields(row, `${path}.${i}`, parentSource, `${prefix} ${displayIndex + 1}`)) : [{ path, label: prefix, value: "No records", editable: false }];
+  }
+  if (typeof data !== "object") return [{ path, label: prefix, value: String(data), editable: false }];
+  const item = data as Record<string, unknown>;
+  const source = typeof item.source === "string" ? item.source : parentSource;
+  if (item.unavailable === true) return [{ path, label: prefix, value: "Not available from source", editable: false, source }];
+  if ("value" in item || "desc" in item) {
+    const raw = item.desc ?? item.value;
+    return [{ path: `${path}.${"desc" in item ? "desc" : "value"}`, label: prefix, value: raw == null ? "" : String(raw), editable: source === "2" && path !== "name", source }];
+  }
+  return Object.entries(item).filter(([key]) => !["source", "classification", "lastupdated", "unavailable"].includes(key))
+    .flatMap(([key, val]) => {
+      const fields = reviewFields(val, path ? `${path}.${key}` : key, source, prefix ? `${prefix} — ${fieldLabel(key)}` : fieldLabel(key));
+      if (path.startsWith("noahistory.noas.") && key === "category" && (item.taxclearance as { value?: string })?.value === "Y") {
+        return fields.map((field) => ({ ...field, label: `${field.label} (Clearance)` }));
+      }
+      return fields;
+    });
+}
+export function applyUserEdits(info: Record<string, unknown>, form: FormData): Record<string, unknown> {
+  const clone = structuredClone(info);
+  for (const field of reviewFields(info).filter((f) => f.editable)) {
+    const update = form.get(`myinfo:${field.path}`);
+    if (typeof update !== "string" || update.length > 500) throw new Error("Invalid editable field");
+    const parts = field.path.split(".");
+    if (parts.some((p) => ["__proto__", "constructor", "prototype"].includes(p))) throw new Error("Invalid field path");
+    let node: Record<string, unknown> = clone;
+    for (const part of parts.slice(0, -1)) node = node[part] as Record<string, unknown>;
+    const leaf = parts.at(-1)!;
+    if (typeof node[leaf] === "number") {
+      if (!update.trim() || !Number.isFinite(Number(update))) throw new Error("Invalid number");
+      node[leaf] = Number(update);
+    } else if (typeof node[leaf] === "boolean") {
+      if (update !== "true" && update !== "false") throw new Error("Invalid boolean");
+      node[leaf] = update === "true";
+    } else node[leaf] = update;
+  }
+  return clone;
+}

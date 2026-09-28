@@ -153,3 +153,36 @@ model SingpassAuthSession {
   createdAt      DateTime  @default(now())
   consumedAt     DateTime?
 }
+
+// Encrypted, temporary Myinfo review data. Removed on submit/cancel or scheduled expiry cleanup.
+model MyinfoDraft {
+  tokenHash String @id
+  encrypted String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model StaffLogin {
+  email String @id
+  codeHash String
+  expiresAt DateTime
+  attempts Int @default(0)
+  sentAt DateTime @default(now())
+}
+
+model StaffSession {
+  tokenHash String @id
+  email String
+  expiresAt DateTime
+  @@index([expiresAt])
+}
+
+model StaffAudit {
+  id String @id @default(cuid())
+  email String
+  action String
+  recordId String?
+  createdAt DateTime @default(now())
+}

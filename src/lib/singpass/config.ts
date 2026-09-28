@@ -2,11 +2,8 @@ import "server-only";
 
 // Central place for every Singpass-related env var + fixed endpoint.
 //
-// Adapted from Loanify's production-approved Singpass integration (src/lib/singpass/config.ts
-// there) — same FAPI 2.0 mechanics, different app registration. None of these env vars are set
-// yet: HMS Credit's Singpass app hasn't been registered in the Developer Portal. Every function
-// here throws until it is — callers (client.ts's startSingpassAuth) already handle that by
-// failing soft back to the manual application form, so an unconfigured deployment stays safe.
+// HMS has a tested staging registration. Production remains gated on its own approval,
+// credentials and exact callback registration; see SINGPASS-PRODUCTION.md.
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -40,9 +37,12 @@ export function singpassFapiDiscoveryUrl(): string {
 }
 
 // Must be an exact match to what's registered against the SDP app — Singpass rejects anything
-// else. Defaults to the current Vercel deployment URL since hmsmoney.com isn't wired up yet
-// (deliberately, per the user — domain cutover waits until Singpass + everything else is
-// ready); update SINGPASS_REDIRECT_URI once re-registering the app against the real domain.
+// else. Staging retains the Vercel callback; approved production uses hmsmoney.com.
 export function singpassRedirectUri(): string {
+  if (process.env.SINGPASS_ENV === "production") {
+    const uri = requireEnv("SINGPASS_REDIRECT_URI");
+    if (uri !== "https://hmsmoney.com/api/auth/singpass/callback") throw new Error("Production callback must use the registered HMS domain");
+    return uri;
+  }
   return process.env.SINGPASS_REDIRECT_URI ?? "https://hms-credit.vercel.app/api/auth/singpass/callback";
 }

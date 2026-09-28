@@ -1,4 +1,4 @@
-import { createReceipt, RECEIPT_COOKIE } from "@/lib/singpass/receipt";
+import { DRAFT_COOKIE, DRAFT_SECONDS } from "@/lib/singpass/drafts";
 import { NextRequest, NextResponse } from "next/server";
 import { completeSingpassAuth } from "@/lib/singpass/client";
 
@@ -15,15 +15,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }
 
-  const result = await completeSingpassAuth(code, state);
+  const result = await completeSingpassAuth(code, state).catch(() => ({ error: "Sign-in could not complete" }));
   if ("error" in result) {
     console.error(`[singpass callback] ${result.error}`);
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }
 
-  const response = NextResponse.redirect(new URL("/apply/success", request.url));
-  response.cookies.set(RECEIPT_COOKIE, await createReceipt(), {
-    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/apply/success", maxAge: 300,
+  const response = NextResponse.redirect(new URL("/apply/review", request.url));
+  response.cookies.set(DRAFT_COOKIE, result.reviewToken, {
+    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/apply", maxAge: DRAFT_SECONDS,
   });
   response.headers.set("Cache-Control", "no-store");
   return response;

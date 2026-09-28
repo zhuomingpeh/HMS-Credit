@@ -47,14 +47,25 @@ Registered callback currently used: https://hms-credit.vercel.app/api/auth/singp
 - Portal purpose currently says "application of loan matching"; update to describe direct
   loan applications to HMS Credit before production onboarding.
 - Validate cancelled/expired/replayed callbacks end-to-end.
-- Review Myinfo display/consent requirements and application review before submission;
-  the scaffold currently persists data directly at callback.
-- Staff portal/access controls, applicant-data retention, notification delivery, and production
+- Myinfo callback now creates an encrypted 15-minute draft. Applicants review all returned
+  fields, edit only user-provided fields (principal name always read-only), then explicitly
+  consent and submit. Cancel deletes the draft; expiry blocks access and daily cleanup purges it.
+- Added official Singpass button artwork, CPF ordering and NOA clearance labels.
+- Staff portal restricts access to the configured allowlist with eight-digit email codes,
+  five attempts per code, single-use verification, one-hour sessions and access audit logs.
+- Local review integration passed: full property display, protected-field tampering ignored,
+  atomic submission, draft replay rejection, unauthenticated access and cron authentication.
+- Local staff integration passed: incorrect/expired codes or sessions denied, correct code
+  accepted once and replay rejected. Live email delivery remains untested.
+- Applicant-data retention, notification delivery, and production
   onboarding remain launch requirements. No RESEND_API_KEY is currently configured in
   Vercel production, so application notification emails are not yet sent.
 - A final production-domain redirect registration and production app approval are still
   needed. The deployed integration intentionally remains connected to Singpass staging.
 - Test account password is not stored in the repository or environment variables.
+- hmsmoney.com now routes to Vercel over HTTPS; www redirects to the apex. Existing Google
+  Workspace MX records are unchanged. Sender authentication awaits Squarespace reauthentication.
+- See SINGPASS-PRODUCTION.md for the handover settings and release gates.
 
 Testing references:
 - https://partnersupport.singpass.gov.sg/hc/en-sg/articles/33107472981657-Staging-Singpass-App-Installation-Tutorial-Guide

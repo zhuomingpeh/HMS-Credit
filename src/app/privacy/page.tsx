@@ -34,6 +34,18 @@ export default function PrivacyPolicyPage() {
 
       <h2>How we use your information</h2>
       <p>
+        If you choose Myinfo, and consent through Singpass, we retrieve the identity, contact,
+        residence, employment, income, CPF, property and vehicle information listed on the
+        Singpass consent screen for your loan application. You can review the retrieved details
+        before submission, or use our manual enquiry form instead.
+      </p>
+      <p>
+        Myinfo review data is temporarily encrypted and expires after 15 minutes. Cancelling
+        deletes that temporary data immediately. Expired, unsubmitted data is deleted by our
+        daily cleanup and when new reviews are created. Submitted applications are retained
+        only for the application purpose and applicable record-keeping obligations.
+      </p>
+      <p>
         We use your information to respond to loan enquiries, assess eligibility, verify your identity, communicate
         with you about your application, comply with our obligations as a licensed moneylender, and improve our
         service.

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { LeadForm } from "@/components/LeadForm";
+import { SingpassButton } from "@/components/SingpassButton";
+import { headers } from "next/headers";
+import { singpassAvailable } from "@/lib/singpass/availability";
 
 export const metadata: Metadata = {
   title: "Apply Now",
@@ -12,6 +15,7 @@ export default async function ApplyPage({
   searchParams: Promise<{ singpassError?: string }>;
 }) {
   const { singpassError } = await searchParams;
+  const available = singpassAvailable((await headers()).get("host") ?? "");
 
   return (
     <main className="page page-wide">
@@ -29,12 +33,10 @@ export default async function ApplyPage({
         <div className="card">
           <h2>Apply with Singpass</h2>
           <p style={{ color: "var(--brand-body)", marginBottom: "1rem" }}>
-            Sign in with Singpass and we&apos;ll pull your particulars from MyInfo automatically — no forms to fill,
-            faster processing.
+            Singapore Citizens, Permanent Residents and eligible FIN holders can retrieve their details
+            with Myinfo, review them, and submit a loan application to HMS Credit.
           </p>
-          <a href="/api/auth/singpass/start" className="button" style={{ display: "inline-block" }}>
-            Apply with Singpass
-          </a>
+          {available ? <><SingpassButton />{process.env.SINGPASS_ENV !== "production" && <p>Testing environment — use official Singpass test accounts only.</p>}</> : <p>Singpass applications will be available after production approval. Please use the manual form to contact our team.</p>}
         </div>
 
         <div className="card">

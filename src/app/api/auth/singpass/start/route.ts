@@ -1,9 +1,11 @@
 import { singpassRedirectUri } from "@/lib/singpass/config";
 import { NextRequest, NextResponse } from "next/server";
 import { startSingpassAuth } from "@/lib/singpass/client";
+import { singpassAvailable } from "@/lib/singpass/availability";
 
 // Plain GET so a link/official button image can point straight here — no client JS needed.
 export async function GET(request: NextRequest) {
+  if (!singpassAvailable(request.nextUrl.host)) return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   // Keep the state cookie on the same host as the registered callback.
   const callbackOrigin = new URL(singpassRedirectUri()).origin;
   if (request.nextUrl.origin !== callbackOrigin) {
@@ -20,9 +22,7 @@ export async function GET(request: NextRequest) {
     });
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
-    // Never leave the applicant on a raw error page — bounce back to the manual form. Most
-    // common cause right now: SINGPASS_CLIENT_ID / the signing keys aren't configured yet
-    // (the app hasn't been registered in the Singpass Developer Portal).
+    // Return to the manual alternative without exposing upstream details to applicants.
     console.error(`[singpass start] ${err instanceof Error ? err.message : String(err)}`);
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }

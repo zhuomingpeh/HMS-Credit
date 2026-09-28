@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 import { TrustBar } from "@/components/TrustBar";
 import { LOAN_TYPES } from "@/lib/loans";
+import { SingpassButton } from "@/components/SingpassButton";
 
 export default function Home() {
   return (
@@ -43,7 +44,7 @@ export default function Home() {
             <h2>Get started</h2>
             <LeadForm />
             <p className="home-hero-singpass-note">
-              Prefer to skip the form? <Link href="/apply">Apply instantly with Singpass &rarr;</Link>
+              <SingpassButton href="/apply" />
             </p>
           </div>
         </div>

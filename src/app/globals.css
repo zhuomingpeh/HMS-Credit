@@ -756,3 +756,14 @@ button {
     gap: 1.5rem;
   }
 }
+/* Official Singpass artwork retains its proportions, including 44px mobile height. */
+.singpass-button { display: inline-flex; margin: 16px 0; min-height: 44px; border-radius: 4px; }
+.singpass-button img { display: block; width: 192px; height: 44px; }
+.singpass-button:focus-visible { outline: 3px solid #141414; outline-offset: 4px; }
+.myinfo-section { margin: 24px 0; }
+.myinfo-field { padding: 12px 0; border-bottom: 1px solid #e8e9eb; overflow-wrap: anywhere; }
+.myinfo-field label { display: block; font-weight: 600; }
+.myinfo-field small { display: block; color: #555; }
+.myinfo-value { white-space: pre-wrap; padding: 6px 0; }
+.review-consent { display: flex; gap: 12px; margin-bottom: 20px; align-items: flex-start; }
+.review-consent input { width: auto; flex: 0 0 auto; margin-top: 5px; }

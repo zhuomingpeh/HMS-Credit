@@ -47,9 +47,9 @@ export type NewApplicantEmailParams = {
   loanType?: string;
 };
 
-// Fired once a Singpass/MyInfo application completes (src/lib/singpass/client.ts) — distinct
+// Fired once a Singpass/MyInfo application completes (apply/review/actions.ts) — distinct
 // from sendNewLeadAdminEmail since a verified Applicant carries far more data than a plain Lead;
-// staff follow up in the database directly rather than from this email alone.
+// staff follow up in the authenticated staff portal.
 export async function sendNewApplicantAdminEmail(params: NewApplicantEmailParams): Promise<void> {
   const { name, residentialStatus, loanAmount, loanType } = params;
   const to = process.env.ADMIN_NOTIFICATION_EMAIL ?? "support@hmsmoney.com";
@@ -68,8 +68,8 @@ export async function sendNewApplicantAdminEmail(params: NewApplicantEmailParams
     from,
     to,
     subject,
-    text: `New Singpass-verified application.\n\nName: ${name}\nResidential status: ${residentialStatus}\nLoan amount: S$${amount}${purposeLine}\n\nFull details are in the Applicant table.`,
-    html: `<p>New Singpass-verified application.</p><p><strong>Name:</strong> ${escapeHtml(name)}<br><strong>Residential status:</strong> ${escapeHtml(residentialStatus)}<br><strong>Loan amount:</strong> S$${amount}${loanType ? `<br><strong>Interested in:</strong> ${escapeHtml(loanType)}` : ""}</p><p>Full details are in the Applicant table.</p>`,
+    text: `New Singpass-verified application.\n\nName: ${name}\nResidential status: ${residentialStatus}\nLoan amount: S$${amount}${purposeLine}\n\nReview the application securely at https://hmsmoney.com/staff.`,
+    html: `<p>New Singpass-verified application.</p><p><strong>Name:</strong> ${escapeHtml(name)}<br><strong>Residential status:</strong> ${escapeHtml(residentialStatus)}<br><strong>Loan amount:</strong> S$${amount}${loanType ? `<br><strong>Interested in:</strong> ${escapeHtml(loanType)}` : ""}</p><p>Review the application securely at https://hmsmoney.com/staff.</p>`,
   });
 
   if (error) {
