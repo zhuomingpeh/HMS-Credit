@@ -25,8 +25,8 @@ export default function Home() {
           <div className="home-hero-copy">
             <h1>Your Reliable &amp; Trusted Money Lender in Singapore</h1>
             <p className="subtitle">
-              In times of financial emergencies, trust HMS Credit — a reliable and licensed moneylender with over a
-              decade of experience. Whether it&apos;s a personal loan, a wedding loan, or funds for your next big
+              In times of financial emergencies, trust HMS Credit — a reliable and licensed moneylender serving borrowers
+              since 2017. Whether it&apos;s a personal loan, a wedding loan, or funds for your next big
               step, we have your best interests at heart.
             </p>
             <div className="home-hero-cta-row">
@@ -92,7 +92,7 @@ export default function Home() {
         <h2>Reliable &amp; Trusted</h2>
         <p className="subtitle">
           Financial emergencies can arise anytime — we understand that, which is why we&apos;re dedicated to helping
-          you with competitively designed loan packages. Having served the industry for well over a decade, HMS
+          you with competitively designed loan packages. Serving borrowers since 2017, HMS
           Credit Pte Ltd is committed to being your reliable and trusted choice for all your loan needs.
         </p>
 

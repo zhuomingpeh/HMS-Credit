@@ -2,22 +2,22 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  openGraph: { title: "About Us | HMS Credit", description: "HMS Credit is a licensed moneylender at Sim Lim Square, serving Singapore borrowers since 2010.", url: "https://hmsmoney.com/about", images: ["/photos/storefront-entrance.jpg"] },
+  openGraph: { title: "About Us | HMS Credit", description: "HMS Credit is a licensed moneylender at Sim Lim Square, serving Singapore borrowers since 2017.", url: "https://hmsmoney.com/about", images: ["/photos/storefront-entrance.jpg"] },
   alternates: { canonical: "/about" },
   title: "About Us",
-  description: "HMS Credit is a licensed moneylender at Sim Lim Square, serving Singapore borrowers since 2010.",
+  description: "HMS Credit is a licensed moneylender at Sim Lim Square, serving Singapore borrowers since 2017.",
 };
 
 export default function AboutPage() {
   return (
     <main className="page page-wide">
       <h1>About HMS Credit</h1>
-      <p className="subtitle">Reliable &amp; trusted, since 2010.</p>
+      <p className="subtitle">Reliable &amp; trusted, since 2017.</p>
 
       <div className="about-layout">
         <div>
           <p style={{ marginBottom: "1rem", color: "var(--brand-body)" }}>
-            HMS Credit has been helping individuals in Singapore with their loan needs for well over a decade. We
+            HMS Credit has been helping individuals in Singapore with their loan needs since 2017. We
             understand that finding the right loan can be overwhelming — that&apos;s why our team of dedicated
             professionals focuses on personalised solutions and straightforward, transparent service.
           </p>
