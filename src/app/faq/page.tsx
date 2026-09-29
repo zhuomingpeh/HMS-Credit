@@ -28,10 +28,6 @@ const FAQS = [
     q: "How long does approval take?",
     a: "Once you submit your application with accurate details, our team will be in touch promptly. Final approval and disbursement happen after you visit our office to complete the necessary paperwork.",
   },
-  {
-    q: "What are the maximum interest rates and fees I can be charged?",
-    a: "As a licensed moneylender, HMS Credit is bound by Ministry of Law caps: interest capped at 4% per month, late interest capped at 4% per month, and a late fee capped at $60 per month. We'll always be upfront about the exact rate and fees that apply to your loan before you sign.",
-  },
 ];
 
 export default function FaqPage() {

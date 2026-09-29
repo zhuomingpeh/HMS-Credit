@@ -65,7 +65,7 @@ export const LOAN_TYPES: LoanType[] = [
     name: "Business Loan",
     tagline: "Working capital for small business owners",
     description:
-      "Cash flow gaps, stock purchases, or a short-term opportunity — sole proprietors and small business owners can borrow against the business's ability to repay, without the paperwork a bank demands.",
+      "Manage cash flow gaps, purchase stock, or take advantage of short-term business opportunities. Our business loans provide sole proprietors and small business owners with access to working capital, based on the business’s ability to repay — with a simpler application process and less paperwork than traditional bank financing.",
     bullets: [
       "Short-term working capital",
       "Suited to sole proprietors and small businesses",
