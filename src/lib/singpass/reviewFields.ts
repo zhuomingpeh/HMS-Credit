@@ -30,6 +30,7 @@ export const MYINFO_SCOPES = [
 ] as const;
 
 export type ReviewField = { path: string; label: string; value: string; editable: boolean; source?: string };
+export const MARITAL_STATUSES = ["SINGLE", "MARRIED", "DIVORCED", "WIDOWED"] as const;
 const labels: Record<string, string> = {
   uinfin: "NRIC / FIN", name: "Principal name", sex: "Sex", race: "Race", dob: "Date of birth",
   residentialstatus: "Residential status", nationality: "Nationality / citizenship", passtype: "Pass type",
@@ -50,6 +51,11 @@ export const fieldLabel = (key: string) => labels[key] ?? key;
 
 // Traverse every returned field, retaining source-based editability and original values.
 export function reviewFields(data: unknown, path = "", parentSource?: string, prefix = ""): ReviewField[] {
+  // MSF marital status is explicitly editable, even when source is government-verified.
+  if (path === "marital") {
+    const item = data && typeof data === "object" ? data as Record<string, unknown> : {};
+    return [{ path: "marital.desc", label: "Marital status", value: String(item.desc ?? item.value ?? ""), editable: true, source: typeof item.source === "string" ? item.source : undefined }];
+  }
   if (data == null) return [{ path, label: prefix, value: "Not available", editable: false }];
   if (Array.isArray(data)) {
     const rows = data.map((row, i) => ({ row, i }));
@@ -77,7 +83,16 @@ export function reviewFields(data: unknown, path = "", parentSource?: string, pr
 }
 export function applyUserEdits(info: Record<string, unknown>, form: FormData): Record<string, unknown> {
   const clone = structuredClone(info);
+  const originalMarital = reviewFields(info.marital, "marital")[0].value;
+  const marital = form.get("myinfo:marital.desc");
+  if (marital !== null) {
+    if (typeof marital !== "string" || (marital !== originalMarital && !MARITAL_STATUSES.includes(marital as typeof MARITAL_STATUSES[number]))) throw new Error("Invalid marital status");
+    // Retain the original payload when unchanged; a correction is user-provided,
+    // and must not retain a conflicting government code or verification source.
+    if (marital !== originalMarital) clone.marital = { value: marital, desc: marital, source: "2" };
+  }
   for (const field of reviewFields(info).filter((f) => f.editable)) {
+    if (field.path === "marital.desc") continue;
     const update = form.get(`myinfo:${field.path}`);
     if (typeof update !== "string" || update.length > 500) throw new Error("Invalid editable field");
     const parts = field.path.split(".");
@@ -100,7 +115,7 @@ export function applyUserEdits(info: Record<string, unknown>, form: FormData): R
 export function reviewSections(info: Record<string, unknown>) {
   const roots = [...new Set(MYINFO_SCOPES.map(scope => scope.split(".")[0]))];
   return roots.map(key => {
-    const fields = key in info ? reviewFields(info[key], key) : [];
+    const fields = key in info || key === "marital" ? reviewFields(info[key], key) : [];
     for (const scope of MYINFO_SCOPES.filter(scope => scope.split(".")[0] === key)) {
       const covered = fields.some(field => {
         const path = field.path.split(".").filter(part => !/^\d+$/.test(part)).join(".");

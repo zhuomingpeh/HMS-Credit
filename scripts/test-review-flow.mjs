@@ -31,6 +31,7 @@ try {
  const form = new FormData(); form.set(action[1], ''); form.set('loanAmount', '1000'); form.set('consent', 'yes'); form.set('contactMobile', '+65 91234567'); form.set('contactEmail', 'review@example.test');
  for (const field of reviewFields(rows[0].rawMyInfo).filter(f => f.editable)) form.set(`myinfo:${field.path}`, field.value);
  form.set('myinfo:name.value', 'TAMPERED');
+ form.set('myinfo:marital.desc', 'MARRIED');
  const response = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.equal(response.status, 303);
  assert.ok(response.headers.get('location').endsWith('/apply/success'));
@@ -41,7 +42,8 @@ try {
  assert.ok((await successPage.text()).includes('Your application has been received'));
 
  assert.equal((await db.query('SELECT count(*)::int AS count FROM "MyinfoDraft" WHERE "tokenHash"=$1', [tokenHash])).rows[0].count, 0);
- const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
+ const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email, "maritalStatus", "rawMyInfo" FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
+ assert.equal(applicant.maritalStatus, 'MARRIED'); assert.equal(applicant.rawMyInfo.marital.desc, 'MARRIED');
  assert.equal(applicant.mobileNumber, '+65 91234567'); assert.equal(applicant.email, 'review@example.test'); assert.notEqual(applicant.name, 'TAMPERED'); assert.equal(applicant.hdbOwnership.length, 2);
  const replay = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });
  assert.ok(replay.headers.get('location').includes('reviewError=session'));

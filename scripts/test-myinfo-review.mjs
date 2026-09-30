@@ -37,3 +37,15 @@ const missingProperty = reviewSections({ hdbownership: [{ address: { value: "TES
 assert.ok(missingProperty.fields.some(f => f.path === "hdbownership.monthlyloaninstalment" && !f.editable));
 assert.equal(reviewSections({ email: { value: "a@example.test", source: "2" } }).find(s => s.key === "email").fields[0].editable, true);
 console.log("PASS: all 28 requested scopes remain visible with absent data, including partial property records.");
+const maritalInfo = { name: { value: 'TEST PERSON', source: '1' }, marital: { code: '1', desc: 'SINGLE', source: '1' } };
+assert.equal(reviewSections(maritalInfo).find(s=>s.key==='marital').fields[0].editable,true);
+const changedMarital = new FormData(); changedMarital.set('myinfo:marital.desc','MARRIED'); changedMarital.set('myinfo:name.value','TAMPERED');
+const corrected = applyUserEdits(maritalInfo,changedMarital);
+assert.deepEqual(corrected.marital,{value:'MARRIED',desc:'MARRIED',source:'2'});
+assert.equal(corrected.name.value,'TEST PERSON');assert.equal(maritalInfo.marital.desc,'SINGLE');
+changedMarital.set('myinfo:marital.desc','SINGLE');assert.deepEqual(applyUserEdits(maritalInfo,changedMarital),maritalInfo);
+changedMarital.set('myinfo:marital.desc','INVALID');assert.throws(()=>applyUserEdits(maritalInfo,changedMarital));
+changedMarital.set('myinfo:marital.desc','');assert.throws(()=>applyUserEdits(maritalInfo,changedMarital));
+assert.equal(reviewSections({}).find(s=>s.key==='marital').fields[0].editable,true);
+changedMarital.set('myinfo:marital.desc','DIVORCED');assert.equal(applyUserEdits({},changedMarital).marital.desc,'DIVORCED');
+console.log('PASS: MSF marital status editable, unchanged payload preserved, valid correction saved, stale code removed, invalid values rejected, identity protected.');

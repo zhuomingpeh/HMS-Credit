@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { readDraft } from "@/lib/singpass/drafts";
-import { fieldLabel, reviewSections } from "@/lib/singpass/reviewFields";
+import { fieldLabel, reviewSections, MARITAL_STATUSES } from "@/lib/singpass/reviewFields";
 import { mapMyInfoToApplicant } from "@/lib/singpass/myinfo";
 import { AddressEmployment, HdbDetails } from "./PropertyDetails";
 import { SubmitReviewButton } from "./SubmitReviewButton";
@@ -20,7 +20,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   const sections = reviewSections(info);
   return <main className="page page-wide compact-review">
     <h1>Review your application</h1>
-    <p className="review-caption">Check your details, then submit. Government-verified details are read-only.</p>
+    <p className="review-caption">Check your details, then submit. You can edit your marital status, mobile number and email. Other government-verified details are read-only.</p>
     <p className="review-caption">For your privacy, this review expires after 15 minutes.</p>
     {error && <p role="alert" className="error-banner">Check your loan amount, editable details and consent before submitting.</p>}
     <form action={submitReviewedApplication}>
@@ -37,7 +37,11 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
       ].map(group => <section className="card" key={group.title}><h2>{group.title}</h2><div className="review-grid">
         {sections.filter(s => group.keys.includes(s.key)).flatMap(({key, fields}) => fields.map((field, i) => <div className="review-detail" key={`${field.path}-${i}`}>
           <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label>
-          {field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="review-readonly">{field.value || "Not provided"}</div>}
+          {key === "marital" ? <><select id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} aria-describedby="marital-help">
+            <option value="">Select marital status</option>
+            {field.value && !MARITAL_STATUSES.includes(field.value as typeof MARITAL_STATUSES[number]) && <option value={field.value}>{field.value}</option>}
+            {MARITAL_STATUSES.map(status => <option key={status} value={status}>{status}</option>)}
+          </select><small id="marital-help">You can update this information.</small></> : field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="review-readonly">{field.value || "Not provided"}</div>}
         </div>))}
       </div></section>)}
       <AddressEmployment info={info} />
