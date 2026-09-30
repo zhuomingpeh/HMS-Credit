@@ -1,4 +1,5 @@
 import { MYINFO_SCOPES } from "./reviewFields";
+import { safeSingpassError } from "./errors";
 import "server-only";
 import { bindSingpassBrowser, consumeSingpassBrowser } from "./browserBinding";
 import { prisma } from "@/lib/prisma";
@@ -231,8 +232,8 @@ export async function completeSingpassAuth(code: string, state: string): Promise
     return { reviewToken };
   } catch (err) {
     await prisma.singpassAuthSession.update({ where: { id: session.id }, data: { consumedAt: new Date() } }).catch(() => {});
-    const message = err instanceof Error ? err.message : "Unknown error";
+    const message = safeSingpassError(err);
     console.error(`[singpass] ${message}`);
-    return { error: `Singpass sign-in didn't complete: ${message}` };
+    return { error: "Singpass sign-in could not complete. Please try again." };
   }
 }

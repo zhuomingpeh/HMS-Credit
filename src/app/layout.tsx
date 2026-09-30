@@ -63,7 +63,8 @@ const organizationJsonLd = {
     postalCode: "188504",
     addressCountry: "SG",
   },
-  openingHours: "Mo-Sa 11:00-19:00",
+  foundingDate: "2017",
+  openingHoursSpecification: [{ "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], opens: "11:00", closes: "19:00" }],
 };
 
 export default async function RootLayout({
@@ -76,6 +77,7 @@ export default async function RootLayout({
     <html lang="en" className={`${headingFont.variable} ${bodyFont.variable}`}>
       <body>
         <script nonce={nonce} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }} />
+        <a className="skip-link" href="#main-content">Skip to content</a>
         <SiteNav />
         {children}
         <SiteFooter />

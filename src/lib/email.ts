@@ -35,7 +35,7 @@ export async function sendNewLeadAdminEmail(params: NewLeadEmailParams): Promise
   });
 
   if (error) {
-    console.error(`Failed to send new-lead admin email: ${error.message}`);
+    console.error("Failed to send new-lead admin email");
   }
 }
 
@@ -71,6 +71,6 @@ export async function sendNewApplicantAdminEmail(params: NewApplicantEmailParams
   });
 
   if (error) {
-    console.error(`Failed to send new-applicant admin email: ${error.message}`);
+    console.error("Failed to send new-applicant admin email");
   }
 }

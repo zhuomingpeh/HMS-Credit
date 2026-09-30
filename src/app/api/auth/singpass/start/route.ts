@@ -1,4 +1,5 @@
 import { singpassRedirectUri } from "@/lib/singpass/config";
+import { safeSingpassError } from "@/lib/singpass/errors";
 import { NextRequest, NextResponse } from "next/server";
 import { startSingpassAuth } from "@/lib/singpass/client";
 import { singpassAvailable } from "@/lib/singpass/availability";
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   } catch (err) {
     // Return to the manual alternative without exposing upstream details to applicants.
-    console.error(`[singpass start] ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`[singpass start] ${safeSingpassError(err)}`);
     return NextResponse.redirect(new URL("/apply?singpassError=1", request.url));
   }
 }

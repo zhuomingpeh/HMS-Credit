@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { sendNewLeadAdminEmail } from "@/lib/email";
 import type { Residency } from "@/generated/prisma/enums";
 import { allowRequest } from "@/lib/rateLimit";
+import { LOAN_TYPES } from "@/lib/loans";
 
 export type LeadFormState = {
   ok: boolean;
@@ -23,6 +24,7 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
   const loanType = String(formData.get("loanType") ?? "").trim() || undefined;
   if (formData.get("website")) return { ok: true };
   if (name.length > 150 || phone.length > 30 || email.length > 254 || (loanType?.length ?? 0) > 100) return { ok: false, error: "Please check your details and try again." };
+  if (loanType && !LOAN_TYPES.some(loan => loan.name === loanType)) return { ok: false, error: "Please select a loan from our loan options." };
 
   if (!name) return { ok: false, error: "Please enter your name." };
   if (!SG_PHONE_RE.test(phone.replace(/[\s-]/g, ""))) return { ok: false, error: "Please enter a valid Singapore phone number." };
@@ -31,9 +33,10 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
 
   const loanAmount = Number(loanAmountRaw);
   if (!Number.isSafeInteger(loanAmount) || loanAmount < 500 || loanAmount > 1000000) return { ok: false, error: "Please enter a loan amount between S$500 and S$1,000,000." };
-  if (!await allowRequest("lead-submit", email.toLowerCase(), { ip: 10, identity: 3, seconds: 900 })) return { ok: false, error: "Too many submissions. Please wait 15 minutes or call us for assistance." };
-
-  const lead = await prisma.lead.create({
+  let lead;
+  try {
+    if (!await allowRequest("lead-submit", email.toLowerCase(), { ip: 10, identity: 3, seconds: 900 })) return { ok: false, error: "Too many submissions. Please wait 15 minutes or call us for assistance." };
+    lead = await prisma.lead.create({
     data: {
       name,
       phone,
@@ -42,7 +45,11 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
       loanAmount: Math.round(loanAmount),
       loanType,
     },
-  });
+    });
+  } catch {
+    console.error("Manual enquiry could not be saved");
+    return { ok: false, error: "We could not confirm that your enquiry was saved. Please call 6333 9061 before trying again." };
+  }
 
   await sendNewLeadAdminEmail({
     name: lead.name,

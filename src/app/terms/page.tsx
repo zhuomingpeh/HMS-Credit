@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="page legal-page">
+    <main id="main-content" className="page legal-page">
+      <Breadcrumbs items={[{ name: "Terms of service", href: "/terms" }]} />
       <h1>Terms of Service</h1>
       <p className="subtitle">Please read these terms before using this website or submitting a loan enquiry.</p>
 

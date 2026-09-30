@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/apply" },
   robots: { index: false, follow: false },
   title: "Apply Now",
-  description: "Apply for a loan with HMS Credit — instantly with Singpass, or fill in the form manually.",
+  description: "Start a loan enquiry with HMS Credit. Send your details and our team will contact you about the next step.",
 };
 
 export default async function ApplyPage({
@@ -22,13 +22,13 @@ export default async function ApplyPage({
   const available = singpassAvailable((await headers()).get("host") ?? "");
 
   return (
-    <main className="page page-wide">
+    <main id="main-content" className="page page-wide">
       <h1>Apply Now</h1>
       <p className="subtitle">{available ? "Apply with Singpass, or fill in the form yourself." : "Fill in the form below and our team will contact you."}</p>
 
       {reviewError && <div className="error-banner" role="alert">This review session has expired or has already been used. If you did not see a confirmation, retrieve your details with Singpass again or use the manual form below.</div>}
       {singpassError && available && (
-        <div className="error-banner">
+        <div className="error-banner" role="alert">
           Singpass sign-in isn&apos;t available right now. Please fill in the form below instead, or call us at +65
           6333 9061.
         </div>

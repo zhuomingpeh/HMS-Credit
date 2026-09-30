@@ -7,11 +7,11 @@ export function SiteFooter() {
       <div className="site-footer-inner">
         <div className="site-footer-brand">
           <span className="site-logo">
-            <Image src="/logo-mark.png" alt="HMS Credit" width={57} height={32} className="site-logo-mark-img" />
+            <Image src="/logo-mark.png" alt="" width={57} height={32} className="site-logo-mark-img" />
             HMS Credit
           </span>
           <p>
-            Licensed moneylender approved by the Ministry of Law. #01-08 Sim Lim Square, 1 Rochor Canal Road, Singapore
+            Licensed moneylender in Singapore. #01-08 Sim Lim Square, 1 Rochor Canal Road, Singapore
             188504.
           </p>
         </div>

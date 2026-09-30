@@ -13,7 +13,7 @@ export default async function ApplySuccessPage() {
   if (!receipt || !(await verifyReceipt(receipt))) redirect("/apply");
 
   return (
-    <main className="page">
+    <main id="main-content" className="page">
       <div className="submission-done">
         <div className="submission-done-icon">✓</div>
         <h1 style={{ marginBottom: 0 }}>Thanks — we&apos;ve got your details</h1>

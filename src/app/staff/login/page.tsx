@@ -4,7 +4,7 @@ export const metadata = { title: "Staff Sign In", robots: { index: false, follow
 export default async function StaffLogin({ searchParams }: { searchParams: Promise<{ sent?: string; error?: string }> }) {
   const state = await searchParams;
   const pendingEmail = (await cookies()).get("hms_staff_pending_email")?.value ?? "";
-  return <main className="page staff-login">
+  return <main id="main-content" className="page staff-login">
     <header className="staff-login-heading"><span className="staff-login-eyebrow">HMS CREDIT · STAFF PORTAL</span><h1>Staff sign in</h1><p>Use your authorised staff email to receive a sign-in code.</p></header>
     {state.sent && <p className="staff-login-notice" role="status">If this address is authorised, a code has been sent. Please wait one minute before requesting another.</p>}
     {state.error && <p className="error-banner" role="alert">{state.error === "limit" ? "Too many sign-in attempts. Please wait 15 minutes before trying again." : state.error === "unavailable" ? "Email sign-in is temporarily unavailable. Please try again later." : "The code is invalid or expired. Request a new code and try again."}</p>}

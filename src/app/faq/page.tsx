@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { LineIcon } from "@/components/LineIcon";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -18,7 +21,7 @@ const FAQS = [
   },
   {
     q: "How much can I borrow?",
-    a: "The amount you qualify for depends on your income and residency status, subject to the Ministry of Law's lending caps. Use our loan calculator for an estimate, or apply and we'll assess your specific situation.",
+    a: "The amount you qualify for depends on your income and residency status, subject to the Ministry of Law's lending caps. Our calculator estimates repayments only; it does not assess eligibility or the amount you can borrow. Contact our team for an assessment.",
   },
   {
     q: "Is my personal information kept confidential?",
@@ -32,8 +35,10 @@ const FAQS = [
 
 export default function FaqPage() {
   return (
-    <main className="page">
-      <h1>Frequently Asked Questions</h1>
+    <main id="main-content" className="page">
+      <Breadcrumbs items={[{ name: "FAQ", href: "/faq" }]} />
+      <span className="eyebrow">Clear answers before you apply</span>
+      <h1>Your questions, answered.</h1>
       <p className="subtitle">Common questions about borrowing from a licensed moneylender.</p>
 
       <div className="faq-list">
@@ -44,6 +49,8 @@ export default function FaqPage() {
           </details>
         ))}
       </div>
+      <div className="faq-support"><LineIcon name="phone"/><div><h2>Still have a question?</h2><p>Talk to our team at <a href="tel:+6563339061">6333 9061</a>, or <Link href="/contact">plan a visit to our office</Link>.</p></div></div>
+      <p className="small-note">For independent information, read the <a href="https://rom.mlaw.gov.sg/information-for-borrowers/guide-to-borrowing-from-licensed-moneylenders-english/" target="_blank" rel="noopener noreferrer">Ministry of Law’s guide to borrowing from licensed moneylenders</a>.</p>
     </main>
   );
 }

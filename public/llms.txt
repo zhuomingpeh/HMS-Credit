@@ -2,6 +2,7 @@
 
 > Public information about HMS CREDIT PTE. LTD., a licensed moneylender in Singapore. This file is not a loan offer.
 
+- Established: 2017
 - UEN: 201703408D
 - Moneylender licence: 91/2026
 - Address: 1 Rochor Canal Road, #01-08 Sim Lim Square, Singapore 188504
@@ -14,6 +15,12 @@
 - [Loan options](https://hmsmoney.com/loans): personal, foreigner, wedding, business and education loans.
 - [Repayment calculator](https://hmsmoney.com/loan-calculator): reducing-balance estimates, excluding fees and late charges. Does not assess eligibility.
 - [FAQ](https://hmsmoney.com/faq): application and borrowing questions.
+- [About HMS Credit](https://hmsmoney.com/about): registered company details and history.
+- [Personal loans](https://hmsmoney.com/loans/personal-loan): everyday expenses and unexpected costs.
+- [Foreigner loans](https://hmsmoney.com/loans/foreigner-loan): requirements for eligible workers in Singapore.
+- [Wedding loans](https://hmsmoney.com/loans/wedding-loan): wedding expenses.
+- [Business loans](https://hmsmoney.com/loans/business-loan): working capital for sole proprietors and business owners.
+- [Education loans](https://hmsmoney.com/loans/education-loan): tuition, courses and upskilling.
 - [Contact](https://hmsmoney.com/contact): office and contact details.
 - [Privacy](https://hmsmoney.com/privacy): personal information handling.
 

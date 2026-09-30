@@ -20,7 +20,7 @@ export function LeadForm({ loanType, initialAmount }: { loanType?: string; initi
 
   if (state.ok) {
     return (
-      <div className="submission-done">
+      <div className="submission-done" role="status" aria-live="polite">
         <div className="submission-done-icon">✓</div>
         <h2>Thanks — we&apos;ve got your details</h2>
         <p>Our team will call or WhatsApp you shortly. You can also reach us directly at +65 6333 9061.</p>
@@ -31,7 +31,7 @@ export function LeadForm({ loanType, initialAmount }: { loanType?: string; initi
   return (
     <form action={action}>
       <div className="staff-sr-only" aria-hidden="true"><label>Leave this blank<input name="website" type="text" tabIndex={-1} autoComplete="off" /></label></div>
-      {state.error && <div className="error-banner">{state.error}</div>}
+      {state.error && <div className="error-banner" role="alert">{state.error}</div>}
       {loanType && <input type="hidden" name="loanType" value={loanType} />}
 
       <div className="field">
@@ -49,8 +49,8 @@ export function LeadForm({ loanType, initialAmount }: { loanType?: string; initi
         <input id="email" name="email" type="email" required maxLength={254} autoComplete="email" />
       </div>
 
-      <div className="field">
-        <label>Residency status</label>
+      <fieldset className="field residency-field">
+        <legend>Residency status</legend>
         <div className="radio-row">
           <label className="radio-option">
             <input type="radio" name="residency" value="SG_PR" required /> Singaporean/PR
@@ -59,7 +59,7 @@ export function LeadForm({ loanType, initialAmount }: { loanType?: string; initi
             <input type="radio" name="residency" value="FOREIGNER" /> Foreigner
           </label>
         </div>
-      </div>
+      </fieldset>
 
       <div className="field">
         <label htmlFor="loanAmount">Loan amount</label>

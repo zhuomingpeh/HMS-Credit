@@ -12,7 +12,7 @@ export const LOAN_TYPES: LoanType[] = [
   {
     slug: "personal-loan",
     name: "Personal Loan",
-    tagline: "Hassle-free funds for whatever life throws at you",
+    tagline: "Support for everyday expenses and unexpected costs",
     description:
       "From medical bills to a shortfall between paychecks, our personal loans are structured around what you can comfortably repay — not a one-size-fits-all package.",
     bullets: [
@@ -46,7 +46,7 @@ export const LOAN_TYPES: LoanType[] = [
   {
     slug: "wedding-loan",
     name: "Wedding Loan",
-    tagline: "Fund your big day without draining your savings",
+    tagline: "Plan wedding expenses around a considered budget",
     description:
       "Banquets, photography, the ring — wedding costs add up fast. A wedding loan lets you spread the cost over a repayment plan that fits your budget instead of paying it all upfront.",
     bullets: [

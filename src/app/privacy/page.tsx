@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +10,8 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="page legal-page">
+    <main id="main-content" className="page legal-page">
+      <Breadcrumbs items={[{ name: "Privacy policy", href: "/privacy" }]} />
       <h1>Privacy Policy</h1>
       <p className="subtitle">
         HMS Credit uses borrower information to assess loan enquiries, process applications, and stay in touch about

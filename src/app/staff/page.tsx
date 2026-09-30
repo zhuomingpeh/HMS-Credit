@@ -13,7 +13,7 @@ export default async function StaffHome() {
   await prisma.staffAudit.create({ data: { email, action: "VIEW_APPLICATION_LIST" } });
   const staging = process.env.SINGPASS_ENV !== "production";
   const records = [...applicants.map(a => ({ ...a, kind: "applicant" as const, createdAt: a.createdAt.toISOString() })), ...leads.map(a => ({ ...a, kind: "lead" as const, createdAt: a.createdAt.toISOString() }))].sort((a,b) => b.createdAt.localeCompare(a.createdAt));
-  return <main className="page staff-dashboard">
+  return <main id="main-content" className="page staff-dashboard">
     <header className="staff-dashboard-header"><div><span className="staff-login-eyebrow">HMS CREDIT · STAFF PORTAL</span><h1>Applications</h1><p>Review incoming enquiries and borrower details.</p></div><div className="staff-account"><span>{email}</span><form action={signOutStaff}><button className="staff-text-link">Sign out</button></form></div></header>
     {staging && <aside className="staff-staging"><span className="staff-badge staff-badge-test">TEST MODE</span><p><strong>Myinfo is connected to Singpass staging.</strong> Myinfo records below are test applications. Manual enquiries are live.</p></aside>}
     <section className="staff-summary" aria-label="Application overview">

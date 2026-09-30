@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { LEGACY_ROUTES } from "@/lib/legacyRoutes";
 
 export function proxy(request: NextRequest) {
+  const sensitive = /^\/(staff|apply|api)(\/|$)/.test(request.nextUrl.pathname);
+  // Public content uses one canonical host. Keep host-bound application/staff
+  // cookies and callback flows on their existing host. Both DNS resolvers now
+  // reach Vercel (checked 30 Sep 2026).
+  const legacy = LEGACY_ROUTES[request.nextUrl.pathname];
+  if (["GET", "HEAD"].includes(request.method) && !sensitive && (request.nextUrl.hostname === "www.hmsmoney.com" || legacy)) {
+    const canonical = request.nextUrl.clone();
+    if (canonical.hostname === "www.hmsmoney.com") {
+      canonical.hostname = "hmsmoney.com";
+      canonical.protocol = "https:";
+      canonical.port = "";
+    }
+    if (legacy) canonical.pathname = legacy;
+    return NextResponse.redirect(canonical, 308);
+  }
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const dev = process.env.NODE_ENV !== "production";
   const policy = [
@@ -16,7 +32,6 @@ export function proxy(request: NextRequest) {
   requestHeaders.set("Content-Security-Policy", policy);
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set("Content-Security-Policy", policy);
-  const sensitive = /^\/(staff|apply|api)(\/|$)/.test(request.nextUrl.pathname);
   if (sensitive) {
     response.headers.set("Cache-Control", "private, no-store, max-age=0");
     response.headers.set("Referrer-Policy", "no-referrer");

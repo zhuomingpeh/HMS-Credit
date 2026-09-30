@@ -2,14 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 import { TrustBar } from "@/components/TrustBar";
-import { LOAN_TYPES } from "@/lib/loans";
+import { LoanCards } from "@/components/LoanCards";
+import { VisitOffice } from "@/components/VisitOffice";
 import { SingpassButton } from "@/components/SingpassButton";
 
 export const metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   return (
-    <>
+    <main id="main-content">
       <section className="home-hero">
         <Image
           src="/photos/storefront-entrance.jpg"
@@ -23,11 +24,10 @@ export default function Home() {
 
         <div className="home-hero-inner">
           <div className="home-hero-copy">
-            <h1>Your Reliable &amp; Trusted Money Lender in Singapore</h1>
+            <span className="eyebrow hero-eyebrow">HMS Credit · Sim Lim Square · Since 2017</span>
+            <h1>Real people.<br/>Clearer loan choices.</h1>
             <p className="subtitle">
-              In times of financial emergencies, trust HMS Credit — a reliable and licensed moneylender serving borrowers
-              since 2017. Whether it&apos;s a personal loan, a wedding loan, or funds for your next big
-              step, we have your best interests at heart.
+              A licensed moneylender in Singapore, here to talk through your needs. Explore your options, plan your repayments and meet our team at Sim Lim Square.
             </p>
             <div className="home-hero-cta-row">
               <Link href="/loan-calculator" className="button button-secondary">
@@ -55,18 +55,11 @@ export default function Home() {
       <TrustBar />
 
       <section className="page page-wide">
-        <h2>Discover our range of loan options</h2>
-        <p className="subtitle">Experience peace of mind by borrowing from a licensed moneylender today.</p>
+        <span className="eyebrow">Support for different needs</span>
+        <h2>Find your starting point.</h2>
+        <p className="subtitle">Five loan options. A conversation about what you need and what you can repay.</p>
 
-        <div className="loans-grid">
-          {LOAN_TYPES.map((loan) => (
-            <Link key={loan.slug} href={`/loans/${loan.slug}`} className="card loan-card">
-              <h3>{loan.name}</h3>
-              <p>{loan.tagline}</p>
-              <span className="loan-card-link">Learn more &rarr;</span>
-            </Link>
-          ))}
-        </div>
+        <LoanCards headingLevel={3} />
       </section>
 
       <section className="page page-wide">
@@ -88,44 +81,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="page page-wide">
-        <h2>Reliable &amp; Trusted</h2>
-        <p className="subtitle">
-          Financial emergencies can arise anytime — we understand that, which is why we&apos;re dedicated to helping
-          you with competitively designed loan packages. Serving borrowers since 2017, HMS
-          Credit Pte Ltd is committed to being your reliable and trusted choice for all your loan needs.
-        </p>
-
-        <div className="about-layout">
-          <div className="card" style={{ maxWidth: 520 }}>
-            <h3>Visit Us</h3>
-            <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
-              #01-08 Sim Lim Square
-              <br />
-              1 Rochor Canal Road, Singapore 188504
-            </p>
-            <p style={{ color: "var(--brand-body)", marginBottom: "0.75rem" }}>
-              Monday&ndash;Saturday: 11am&ndash;7pm
-              <br />
-              Sundays: by appointment only
-              <br />
-              Closed on public holidays
-            </p>
-            <a href="tel:+6563339061" className="button" style={{ display: "inline-block" }}>
-              Call +65 6333 9061
-            </a>
-          </div>
-
-          <Image
-            src="/photos/storefront-visit.jpg"
-            alt="HMS Credit's storefront at #01-08 Sim Lim Square"
-            width={1536}
-            height={2048}
-            sizes="(max-width: 720px) calc(100vw - 48px), 440px"
-            className="about-photo"
-          />
-        </div>
-      </section>
-    </>
+      <div className="page page-wide home-visit"><VisitOffice /></div>
+    </main>
   );
 }

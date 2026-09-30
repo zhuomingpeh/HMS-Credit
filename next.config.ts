@@ -10,25 +10,21 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    localPatterns: [
+      { pathname: "/photos/**", search: "" },
+      { pathname: "/logo-mark.png", search: "" },
+      { pathname: "/logo.webp", search: "" },
+      { pathname: "/favicon.webp", search: "" },
+    ],
+    maximumRedirects: 0,
+  },
   experimental: { serverActions: { bodySizeLimit: "128kb" } },
   async headers() {
     return [
       {
         source: "/:path*",
         headers: securityHeaders,
-      },
-    ];
-  },
-  async redirects() {
-    // Leave both hosts usable during Squarespace DNS propagation: its old apex
-    // redirects to www. Enable only after all resolvers reach Vercel for the apex.
-    if (process.env.CANONICAL_DOMAIN_REDIRECT !== "true") return [];
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.hmsmoney.com" }],
-        destination: "https://hmsmoney.com/:path*",
-        permanent: true,
       },
     ];
   },

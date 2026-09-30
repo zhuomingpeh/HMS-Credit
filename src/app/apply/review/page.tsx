@@ -18,7 +18,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   const info = structuredClone(draft.data.personInfo);
   const mapped = mapMyInfoToApplicant(info);
   const sections = reviewSections(info);
-  return <main className="page page-wide compact-review">
+  return <main id="main-content" className="page page-wide compact-review">
     <h1>Review your application</h1>
     <p className="review-caption">Check your details, then submit. You can edit your marital status, mobile number and email. Other government-verified details are read-only.</p>
     <p className="review-caption">For your privacy, this review expires after 15 minutes.</p>

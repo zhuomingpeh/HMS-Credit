@@ -13,8 +13,13 @@ for(const canonical of urls){
  assert.ok(/name="description" content="[^"]+"/.test(html),`Description: ${path}`);
  assert.equal((html.match(/<h1\b/g)||[]).length,1,`One primary heading: ${path}`);
  assert.ok(!/name="robots" content="[^"]*noindex/.test(html),`Indexable: ${path}`);
+ assert.equal((html.match(/<main\b/g)||[]).length,1,`One main landmark: ${path}`);
+ assert.ok(html.includes('id="main-content"'),`Skip target: ${path}`);
  const blocks=[...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs)];
  assert.ok(blocks.length>0);for(const [,data] of blocks)JSON.parse(data);
+ const schemas=blocks.map(([,data])=>JSON.parse(data));
+ if(path!=='/')assert.ok(schemas.some(d=>d['@type']==='BreadcrumbList'),`Breadcrumbs: ${path}`);
+ if(path.startsWith('/loans/'))assert.ok(schemas.some(d=>d['@type']==='Service'),`Service data: ${path}`);
  findings.push({path,status:res.status,canonical:true,description:true,jsonLd:true});
 }
 const robots=await (await fetch(base+'/robots.txt')).text();
