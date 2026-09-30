@@ -774,8 +774,11 @@ button {
 .compact-review h2 { font-size: 1.1rem; margin: 0 0 14px; }
 .review-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px 20px; }
 .review-grid label { display:block; font-size: .82rem; font-weight:600; margin-bottom:5px; }
-.review-grid input { width:100%; min-height:44px; padding:10px; border:1px solid #aeb7c2; border-radius:6px; background:#fff; box-sizing:border-box; }
-.review-readonly { font-size:.92rem; overflow-wrap:anywhere; line-height:1.5; }
+.review-grid input,.review-grid select { display:block; width:100%; min-width:0; min-height:44px; padding:10px; border:1px solid #aeb7c2; border-radius:6px; background:#fff; box-sizing:border-box; font:inherit; font-size:.92rem; line-height:1.5; }
+.review-grid select { appearance:none; padding-right:38px; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23596575' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; }
+@media (forced-colors:active) { .review-grid select { appearance:auto; background-image:none; } }
+.review-detail { min-width:0; }
+.review-readonly { min-height:44px; padding:10px 0; box-sizing:border-box; font-size:.92rem; overflow-wrap:anywhere; line-height:1.5; }
 .review-caption { font-size:.85rem; color:#596575; margin:0 0 12px; }
 .review-table-scroll { overflow-x:auto; }
 .review-table { width:100%; border-collapse:collapse; font-size:.88rem; }

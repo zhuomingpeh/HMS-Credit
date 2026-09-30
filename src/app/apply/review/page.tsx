@@ -33,15 +33,16 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
         {sections.filter(s => ["mobileno", "email"].includes(s.key)).flatMap(s => s.fields.filter(f => f.editable)).map(f => <input key={f.path} type="hidden" name={`myinfo:${f.path}`} value={f.value} />)}
       </section>
       {[
-        { title: "Personal details", keys: ["uinfin", "name", "sex", "race", "dob", "marital", "residentialstatus", "nationality", "passtype", "passstatus", "passexpirydate"] },
+        { title: "Personal details", keys: ["uinfin", "name", "sex", "race", "dob", "residentialstatus", "nationality", "marital"] },
+        { title: "Pass details", keys: ["passtype", "passstatus", "passexpirydate"] },
       ].map(group => <section className="card" key={group.title}><h2>{group.title}</h2><div className="review-grid">
-        {sections.filter(s => group.keys.includes(s.key)).flatMap(({key, fields}) => fields.map((field, i) => <div className="review-detail" key={`${field.path}-${i}`}>
+        {group.keys.flatMap(key => sections.filter(s => s.key === key)).flatMap(({key, fields}) => fields.map((field, i) => <div className="review-detail" key={`${field.path}-${i}`}>
           <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label>
-          {key === "marital" ? <><select id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} aria-describedby="marital-help">
+          {key === "marital" ? <select id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value}>
             <option value="">Select marital status</option>
             {field.value && !MARITAL_STATUSES.includes(field.value as typeof MARITAL_STATUSES[number]) && <option value={field.value}>{field.value}</option>}
             {MARITAL_STATUSES.map(status => <option key={status} value={status}>{status}</option>)}
-          </select><small id="marital-help">You can update this information.</small></> : field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="review-readonly">{field.value || "Not provided"}</div>}
+          </select> : field.editable ? <input id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /> : <div className="review-readonly">{field.value || "Not provided"}</div>}
         </div>))}
       </div></section>)}
       <AddressEmployment info={info} />
