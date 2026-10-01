@@ -19,9 +19,9 @@ function address(raw: unknown) {
     [text(row.country), text(row.postal)].filter(Boolean).join(" "),
   ].filter(Boolean).join(", ");
 }
-function ScopeField({ label, path, raw, source }: { label: string; path: string; raw: unknown; source?: string }) {
+function ScopeField({ label, path, raw, source, readOnly = false }: { label: string; path: string; raw: unknown; source?: string; readOnly?: boolean }) {
   const fields = reviewFields(raw, path, source);
-  const editable = fields.some(field => field.editable);
+  const editable = !readOnly && fields.some(field => field.editable);
   const isAddress = path === "regadd" || path.endsWith(".address");
   const display = isAddress ? address(raw) : fields.map(field => field.value).filter(Boolean).join(" · ");
   return <div className={`review-detail${isAddress ? " review-address" : ""}`}>
@@ -29,12 +29,12 @@ function ScopeField({ label, path, raw, source }: { label: string; path: string;
     {editable ? fields.map(field => field.editable ? <div key={field.path}><label className="review-sub-label" htmlFor={field.path}>{field.label || label}</label><input id={field.path} name={`myinfo:${field.path}`} defaultValue={field.value} maxLength={500} /></div> : <div className="review-readonly" key={field.path}>{field.value}</div>) : <div className="review-readonly">{display || "Not available from Myinfo"}</div>}
   </div>;
 }
-export function AddressEmployment({ info }: { info: Data }) {
+export function AddressEmployment({ info, readOnly = false }: { info: Data; readOnly?: boolean }) {
   return <section className="card"><h2>Address and employment</h2><div className="review-grid">
-    {["regadd", "hdbtype", "employment", "occupation", "ownerprivate", "vehicles"].map(key => <ScopeField key={key} path={key} raw={info[key]} label={key === "employment" ? "Employer's name" : key === "hdbtype" ? "Type of HDB (registered address)" : fieldLabel(key)} />)}
+    {["regadd", "hdbtype", "employment", "occupation", "ownerprivate", "vehicles"].map(key => <ScopeField key={key} path={key} raw={info[key]} readOnly={readOnly} label={key === "employment" ? "Employer's name" : key === "hdbtype" ? "Type of HDB (registered address)" : fieldLabel(key)} />)}
   </div></section>;
 }
-export function HdbDetails({ info }: { info: Data }) {
+export function HdbDetails({ info, readOnly = false }: { info: Data; readOnly?: boolean }) {
   const raw = info.hdbownership;
   const records = Array.isArray(raw) && raw.length ? raw : [raw];
   return <section className="card"><h2>HDB ownership</h2>{records.map((record, index) => {
@@ -44,7 +44,7 @@ export function HdbDetails({ info }: { info: Data }) {
       {records.length > 1 && <h3>Property {index + 1}</h3>}
       <div className="review-grid">{MYINFO_SCOPES.filter(scope => scope.startsWith("hdbownership.")).map(scope => {
         const key = scope.split(".")[1];
-        return <ScopeField key={scope} path={`${base}.${key}`} raw={item.unavailable ? undefined : item[key]} source={typeof item.source === "string" ? item.source : undefined} label={fieldLabel(key)} />;
+        return <ScopeField key={scope} path={`${base}.${key}`} raw={item.unavailable ? undefined : item[key]} readOnly={readOnly} source={typeof item.source === "string" ? item.source : undefined} label={fieldLabel(key)} />;
       })}</div>
     </div>;
   })}</section>;

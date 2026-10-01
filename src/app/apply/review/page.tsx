@@ -26,7 +26,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
     <form action={submitReviewedApplication}>
       <section className="card"><h2>Loan and contact details</h2>
         <div className="review-grid">
-          <div><label htmlFor="reviewAmount">Loan amount (S$)</label><input id="reviewAmount" name="loanAmount" type="number" min="1" max="1000000" step="1" required defaultValue={draft.data.loanAmount} /></div>
+          <div><label htmlFor="reviewAmount">Loan amount (S$)</label><input id="reviewAmount" name="loanAmount" type="text" inputMode="numeric" pattern="[0-9]{1,7}" maxLength={7} title="Enter a whole dollar amount from 1 to 1000000" required defaultValue={draft.data.loanAmount} /></div>
           <div><label htmlFor="contactMobile">Mobile number</label><input id="contactMobile" name="contactMobile" type="tel" autoComplete="tel" required defaultValue={mapped.mobileNumber ?? ""} maxLength={30} /></div>
           <div><label htmlFor="contactEmail">Email</label><input id="contactEmail" name="contactEmail" type="email" autoComplete="email" required defaultValue={mapped.email ?? ""} maxLength={254} /></div>
         </div>
