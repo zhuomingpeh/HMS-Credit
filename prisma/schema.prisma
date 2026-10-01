@@ -130,6 +130,8 @@ model Applicant {
   rawMyInfo Json
 
   singpassSub String @unique // OIDC `sub` claim — dedupes repeat applications from one identity
+  // Persist origin so switching the website to production never relabels test records.
+  sourceEnvironment String @default("staging")
 
   loanAmount Int?
   loanType   String? // slug of the /loans/[slug] page the applicant started from, if any

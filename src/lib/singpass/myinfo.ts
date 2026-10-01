@@ -240,7 +240,9 @@ export function mapMyInfoToApplicant(info: MyInfoPersonInfo): ApplicantMyInfoDat
   const passStatus = readField(info, "passstatus");
   const passExpiryDate = readField(info, "passexpirydate");
   const email = readField(info, "email");
-  const housingType = readField(info, "housingtype");
+  // Production approval covers registered-address HDB type, not URA housingtype.
+  // Keep the existing storage column; ownership dwelling types are mapped separately.
+  const housingType = readField(info, "hdbtype");
   const ownerPrivate = readField(info, "ownerprivate");
   const employment = readField(info, "employment");
   const occupation = readField(info, "occupation");

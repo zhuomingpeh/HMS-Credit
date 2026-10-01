@@ -4,6 +4,8 @@ import { createHmac, createHash, randomInt } from 'node:crypto';
 import pg from 'pg';
 import { databaseConfig } from './database-config.mjs';
 const base = process.env.STAFF_TEST_URL ?? 'http://localhost:3016';
+assert.ok(['localhost', '127.0.0.1'].includes(new URL(base).hostname), 'Staff mutation tests must target localhost');
+assert.ok(['localhost', '127.0.0.1'].includes(new URL(databaseConfig.connectionString).hostname), 'Staff mutation tests require an isolated local database');
 const email = process.env.STAFF_EMAILS?.split(',')[0]?.trim();
 assert.ok(email && process.env.STAFF_AUTH_SECRET);
 const db = new pg.Client(databaseConfig);
@@ -27,7 +29,8 @@ try {
  const valid = await verify(code); assert.equal(valid.status,303); assert.equal(valid.headers.get('location'),'/staff');
  const cookie = valid.headers.get('set-cookie').match(/hms_staff_session=([^;]+)/)[0];
  sessionHash = createHash('sha256').update(cookie.split('=')[1]).digest('hex');
- const list = await fetch(base+'/staff',{headers:{cookie}}); assert.equal(list.status,200); assert.ok((await list.text()).includes('Applications'));
+ const list = await fetch(base+'/staff',{headers:{cookie}}); assert.equal(list.status,200); const listHtml=await list.text(); assert.ok(listHtml.includes('Applications'));
+ assert.ok(listHtml.includes('Myinfo<!-- --> · Test') || listHtml.includes('Myinfo<!-- -->') && listHtml.includes(' · Test'), 'Staging records stay marked after production activation');
  const reused = await verify(code); assert.ok(reused.headers.get('location').includes('error=1'));
  await db.query('UPDATE "StaffSession" SET "expiresAt"=$1 WHERE "tokenHash"=$2',[new Date(Date.now()-1000).toISOString(),sessionHash]);
  const expired = await fetch(base+'/staff',{headers:{cookie},redirect:'manual'});

@@ -58,7 +58,7 @@ missing is the actual relationship with Singpass, which only you (as HMS Credit)
 3. **Request exactly these 28 scopes** — paste the justification column straight from the table
    you already wrote; Singpass reviews scopes against stated purpose:
    `uinfin name sex race dob residentialstatus nationality passtype passstatus passexpirydate
-   mobileno email regadd housingtype cpfcontributions noahistory ownerprivate employment
+   mobileno email regadd hdbtype cpfcontributions noahistory ownerprivate employment
    occupation marital vehicles.vehicleno hdbownership.noofowners hdbownership.address
    hdbownership.hdbtype hdbownership.leasecommencementdate hdbownership.dateofpurchase
    hdbownership.outstandingloanbalance hdbownership.monthlyloaninstalment`

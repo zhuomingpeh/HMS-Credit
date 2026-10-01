@@ -7,6 +7,8 @@ import pg from 'pg';
 import { databaseConfig } from './database-config.mjs';
 import ts from 'typescript';
 const base = process.env.REVIEW_TEST_URL ?? 'http://localhost:3015';
+assert.ok(['localhost', '127.0.0.1'].includes(new URL(base).hostname), 'Review mutation tests must target localhost');
+assert.ok(['localhost', '127.0.0.1'].includes(new URL(databaseConfig.connectionString).hostname), 'Review mutation tests require an isolated local database');
 async function load(path) {
  const source = await readFile(new URL(path, import.meta.url), 'utf8');
  return import('data:text/javascript;base64,' + Buffer.from(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText).toString('base64'));
@@ -19,11 +21,13 @@ try {
  await db.connect();
  const { rows } = await db.query('SELECT "rawMyInfo", "singpassSub" FROM "Applicant" WHERE nric=$1', ['S7790709B']);
  assert.equal(rows.length, 1, 'Known staging fixture must exist');
+ rows[0].rawMyInfo.hdbtype = { code: '04', desc: '4-ROOM FLAT (HDB)', source: '1' };
  const token = randomBytes(32).toString('base64url'); tokenHash = draftHash(token);
  await db.query('INSERT INTO "MyinfoDraft" ("tokenHash", encrypted, "expiresAt") VALUES ($1,$2,$3)', [tokenHash, encryptDraft({ personInfo: rows[0].rawMyInfo, singpassSub: rows[0].singpassSub }), new Date(Date.now() + 900000).toISOString()]);
  const cookie = `hms_myinfo_review=${token}`;
  const html = await (await fetch(base + '/apply/review', { headers: { cookie } })).text();
  assert.ok(html.includes('Review your application'));
+ assert.ok(html.includes('Type of HDB (registered address)') && html.includes('4-ROOM FLAT (HDB)'));
  assert.ok(html.includes('PEARL GARDEN') && html.includes('SPADE BUILDING'), 'All HDB records shown');
  assert.ok(html.includes('Income') || html.includes('income'));
  const action = html.match(/name="(\$ACTION_ID_[^"]+)"/);
@@ -42,7 +46,9 @@ try {
  assert.ok((await successPage.text()).includes('Your application has been received'));
 
  assert.equal((await db.query('SELECT count(*)::int AS count FROM "MyinfoDraft" WHERE "tokenHash"=$1', [tokenHash])).rows[0].count, 0);
- const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email, "maritalStatus", "rawMyInfo" FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
+ const applicant = (await db.query('SELECT name, "hdbOwnership", "mobileNumber", email, "maritalStatus", "rawMyInfo", "housingType", "sourceEnvironment" FROM "Applicant" WHERE "singpassSub"=$1', [rows[0].singpassSub])).rows[0];
+ assert.equal(applicant.housingType, '4-ROOM FLAT (HDB)');
+ assert.equal(applicant.sourceEnvironment, process.env.SINGPASS_ENV === 'production' ? 'production' : 'staging');
  assert.equal(applicant.maritalStatus, 'MARRIED'); assert.equal(applicant.rawMyInfo.marital.desc, 'MARRIED');
  assert.equal(applicant.mobileNumber, '+65 91234567'); assert.equal(applicant.email, 'review@example.test'); assert.notEqual(applicant.name, 'TAMPERED'); assert.equal(applicant.hdbOwnership.length, 2);
  const replay = await fetch(base + '/apply/review', { method: 'POST', headers: { cookie, origin: base }, body: form, redirect: 'manual' });

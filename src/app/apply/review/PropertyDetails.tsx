@@ -31,7 +31,7 @@ function ScopeField({ label, path, raw, source }: { label: string; path: string;
 }
 export function AddressEmployment({ info }: { info: Data }) {
   return <section className="card"><h2>Address and employment</h2><div className="review-grid">
-    {["regadd", "housingtype", "employment", "occupation", "ownerprivate", "vehicles"].map(key => <ScopeField key={key} path={key} raw={info[key]} label={key === "employment" ? "Employer's name" : fieldLabel(key)} />)}
+    {["regadd", "hdbtype", "employment", "occupation", "ownerprivate", "vehicles"].map(key => <ScopeField key={key} path={key} raw={info[key]} label={key === "employment" ? "Employer's name" : key === "hdbtype" ? "Type of HDB (registered address)" : fieldLabel(key)} />)}
   </div></section>;
 }
 export function HdbDetails({ info }: { info: Data }) {

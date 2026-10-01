@@ -2,11 +2,11 @@
 import { useState } from "react";
 import Link from "next/link";
 
-type RecordItem = { id: string; name: string; kind: "applicant" | "lead"; createdAt: string; loanAmount: number | null };
+type RecordItem = { id: string; name: string; kind: "applicant" | "lead"; createdAt: string; loanAmount: number | null; sourceEnvironment?: string };
 const date = new Intl.DateTimeFormat("en-SG", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Singapore" });
 const time = new Intl.DateTimeFormat("en-SG", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Singapore" });
 
-export default function ApplicationList({ records, staging }: { records: RecordItem[]; staging: boolean }) {
+export default function ApplicationList({ records }: { records: RecordItem[] }) {
   const [query, setQuery] = useState("");
   const [channel, setChannel] = useState("all");
   const filtered = records.filter(r => (channel === "all" || r.kind === channel) && r.name.toLowerCase().includes(query.trim().toLowerCase()));
@@ -19,7 +19,7 @@ export default function ApplicationList({ records, staging }: { records: RecordI
     <p className="staff-result-count" aria-live="polite">{filtered.length} {filtered.length === 1 ? "record" : "records"}{query ? ` matching “${query}”` : ""}</p>
     {filtered.length ? <div className="staff-table-wrap"><table className="staff-table"><thead><tr><th scope="col">Applicant</th><th scope="col">Channel</th><th scope="col">Requested amount</th><th scope="col">Submitted</th><th scope="col"><span className="staff-sr-only">Open application</span></th></tr></thead><tbody>{filtered.map(r => <tr key={`${r.kind}-${r.id}`}>
       <td data-label="Applicant"><Link className="staff-applicant-name" href={`/staff/${r.kind}/${r.id}`} prefetch={false}>{r.name}</Link></td>
-      <td data-label="Channel"><span className={`staff-badge ${r.kind === "lead" ? "staff-badge-manual" : ""}`}>{r.kind === "lead" ? "Manual" : "Myinfo"}{r.kind === "applicant" && staging ? " · Test" : ""}</span></td>
+      <td data-label="Channel"><span className={`staff-badge ${r.kind === "lead" ? "staff-badge-manual" : r.sourceEnvironment !== "production" ? "staff-badge-test" : ""}`}>{r.kind === "lead" ? "Manual" : "Myinfo"}{r.kind === "applicant" && r.sourceEnvironment !== "production" ? " · Test" : ""}</span></td>
       <td data-label="Requested amount" className="staff-amount">{r.loanAmount == null ? <span className="staff-muted">Not provided</span> : `S$${r.loanAmount.toLocaleString("en-SG")}`}</td>
       <td data-label="Submitted"><time dateTime={r.createdAt}>{date.format(new Date(r.createdAt))}<small>{time.format(new Date(r.createdAt))}</small></time></td>
       <td className="staff-open-cell"><Link className="staff-open" href={`/staff/${r.kind}/${r.id}`} prefetch={false} aria-label={`View application for ${r.name}`}>View details <span aria-hidden="true">→</span></Link></td>

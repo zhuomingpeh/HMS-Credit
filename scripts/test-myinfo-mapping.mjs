@@ -8,8 +8,10 @@ const { mapMyInfoToApplicant } = await import(`data:text/javascript;base64,${Buf
 const value = (value) => ({ value });
 const mapped = mapMyInfoToApplicant({
   residentialstatus: { desc: 'CITIZEN' },
+  hdbtype: { desc: '4-ROOM FLAT (HDB)', source: '1' },
+  housingtype: { desc: 'UNAPPROVED FIELD' },
   hdbownership: [
-    { noofowners: value(2), outstandingloanbalance: value(400), monthlyloaninstalment: value(50) },
+    { noofowners: value(2), hdbtype: { desc: '3-ROOM FLAT (HDB)' }, outstandingloanbalance: value(400), monthlyloaninstalment: value(50) },
     { noofowners: value(1), outstandingloanbalance: value(0), monthlyloaninstalment: value(0) },
   ],
   noahistory: { noas: [{ yearofassessment: value('2025'), amount: value(5000), employment: value(4000), trade: value(1000), rent: value(0), interest: value(0), taxclearance: value('N') }] },
@@ -17,6 +19,9 @@ const mapped = mapMyInfoToApplicant({
   vehicles: [{ vehicleno: value('TEST1') }, { vehicleno: value('TEST2') }],
 });
 assert.equal(mapped.hdbOwnership.length, 2);
+assert.equal(mapped.housingType, '4-ROOM FLAT (HDB)');
+assert.equal(mapped.hdbOwnership[0].dwellingType, '3-ROOM FLAT (HDB)');
+assert.equal(mapMyInfoToApplicant({ housingtype: { desc: 'UNAPPROVED FIELD' } }).housingType, undefined);
 assert.equal(mapped.hdbOwnership[1].outstandingLoanBalance, 0);
 assert.equal(mapped.hdbOwnership[1].monthlyLoanInstalment, 0);
 assert.equal(mapped.noticeOfAssessments[0].employment, 4000);

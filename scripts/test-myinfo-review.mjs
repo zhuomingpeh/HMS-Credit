@@ -32,6 +32,11 @@ assert.equal(applyUserEdits({ flag: { value: true, source: '2' } }, boolForm).fl
 console.log('PASS: authenticated draft encryption/tamper rejection; protected fields cannot be edited; CPF ordering preserves original paths; NOA clearance displayed.');
 
 assert.equal(MYINFO_SCOPES.length, 28);
+assert.ok(MYINFO_SCOPES.includes('hdbtype'));
+assert.ok(MYINFO_SCOPES.includes('hdbownership.hdbtype'));
+assert.ok(MYINFO_SCOPES.includes('noahistory'));
+assert.ok(!MYINFO_SCOPES.includes('housingtype'));
+assert.equal(reviewSections({ hdbtype: { desc: '4-ROOM FLAT (HDB)', source: '1' } }).find(s => s.key === 'hdbtype').fields[0].editable, false);
 assert.equal(reviewSections({}).flatMap(s => s.fields).length, 28);
 const missingProperty = reviewSections({ hdbownership: [{ address: { value: "TEST" } }] }).find(s => s.key === "hdbownership");
 assert.ok(missingProperty.fields.some(f => f.path === "hdbownership.monthlyloaninstalment" && !f.editable));

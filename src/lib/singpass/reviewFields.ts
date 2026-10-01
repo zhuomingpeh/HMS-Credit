@@ -12,7 +12,7 @@ export const MYINFO_SCOPES = [
   "mobileno",
   "email",
   "regadd",
-  "housingtype",
+  "hdbtype",
   "cpfcontributions",
   "noahistory",
   "ownerprivate",

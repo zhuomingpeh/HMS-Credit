@@ -37,7 +37,8 @@ export async function submitReviewedApplication(form: FormData) {
   const data = { ...fields, nric: mapped.nric, name: mapped.name, residentialStatus: mapped.residentialStatus,
     address: json(address), hdbOwnership: json(hdbOwnership), cpfContributions: json(cpfContributions),
     noticeOfAssessments: json(noticeOfAssessments), rawMyInfo: json(personInfo) as Prisma.InputJsonValue,
-    loanAmount, loanType: draft.data.loanType, singpassSub: draft.data.singpassSub };
+    loanAmount, loanType: draft.data.loanType, singpassSub: draft.data.singpassSub,
+    sourceEnvironment: process.env.SINGPASS_ENV === "production" ? "production" : "staging" };
   const receipt = await createReceipt();
   const applicant = await prisma.$transaction(async (tx) => {
     const claimed = await tx.myinfoDraft.deleteMany({ where: { tokenHash: draft.tokenHash, expiresAt: { gt: new Date() } } });

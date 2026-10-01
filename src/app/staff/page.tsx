@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function StaffHome() {
   const email = await requireStaff();
   const [applicants, leads] = await Promise.all([
-    prisma.applicant.findMany({ orderBy: { createdAt: "desc" }, take: 50, select: { id: true, name: true, createdAt: true, loanAmount: true } }),
+    prisma.applicant.findMany({ orderBy: { createdAt: "desc" }, take: 50, select: { id: true, name: true, createdAt: true, loanAmount: true, sourceEnvironment: true } }),
     prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 50, select: { id: true, name: true, createdAt: true, loanAmount: true } }),
   ]);
   await prisma.staffAudit.create({ data: { email, action: "VIEW_APPLICATION_LIST" } });
@@ -19,9 +19,9 @@ export default async function StaffHome() {
     <section className="staff-summary" aria-label="Application overview">
       <div><span>Recent records</span><strong>{records.length}</strong><small>Across both channels</small></div>
       <div><span>Manual enquiries</span><strong>{leads.length}</strong><small>Website submissions</small></div>
-      <div><span>Myinfo applications</span><strong>{applicants.length}</strong><small>{staging ? "Staging test records" : "Submitted with Singpass"}</small></div>
+      <div><span>Myinfo applications</span><strong>{applicants.filter(a => a.sourceEnvironment === "production").length}</strong><small>{applicants.filter(a => a.sourceEnvironment !== "production").length} test records marked below</small></div>
     </section>
-    <ApplicationList records={records} staging={staging} />
+    <ApplicationList records={records} />
     <p className="staff-list-note">Includes up to 50 recent records per channel. Amounts are requested loan amounts.</p>
   </main>;
 }
