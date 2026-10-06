@@ -12,6 +12,8 @@ export async function requestStaffCode(form: FormData) {
   if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) redirect("/staff/login?error=unavailable");
   const email = String(form.get("email") ?? "").trim().toLowerCase();
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) redirect("/staff/login?error=1");
+  const requestedAt = Number((await cookies()).get("hms_staff_code_requested_at")?.value ?? 0);
+  if (requestedAt > Date.now() - 60000 && requestedAt <= Date.now()) redirect("/staff/login?sent=1");
   if (!await allowRequest("staff-send", email, { ip: 20, identity: 5, seconds: 900 })) redirect("/staff/login?error=limit");
   if (allowedStaff(email) && process.env.RESEND_API_KEY && process.env.EMAIL_FROM) {
     const code = String(randomInt(10000000, 100000000));
@@ -30,21 +32,26 @@ export async function requestStaffCode(form: FormData) {
         const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({ from: process.env.EMAIL_FROM,
           to: email, subject: "Your HMS Credit staff sign-in code", text: `Your HMS Credit staff sign-in code is ${code}. It expires in 10 minutes. If you did not request this code, ignore this email.` });
         if (error) throw new Error("Delivery failed");
+        await prisma.staffAudit.create({ data: { email, action: "CODE_EMAIL_ACCEPTED" } }).catch(() => console.error("Staff delivery audit unavailable"));
       } catch {
         console.error("Staff code delivery failed");
         await prisma.staffLogin.deleteMany({ where: { email, codeHash: data.codeHash } });
+        await prisma.staffAudit.create({ data: { email, action: "CODE_EMAIL_FAILED" } }).catch(() => console.error("Staff delivery audit unavailable"));
         // Keep the same public response for unknown and known addresses.
       }
     }
   }
   // Convenience only: this cookie grants no access; verification still checks the OTP and allowlist.
   (await cookies()).set("hms_staff_pending_email", email.slice(0,254), { httpOnly:true, secure:process.env.NODE_ENV === "production", sameSite:"strict", path:"/staff/login", maxAge:600 });
+  (await cookies()).set("hms_staff_code_requested_at", String(Date.now()), { httpOnly:true, secure:process.env.NODE_ENV === "production", sameSite:"strict", path:"/staff/login", maxAge:60 });
   // Uniform response avoids disclosing staff membership or delivery state.
   redirect("/staff/login?sent=1");
 }
 
 export async function verifyStaffCode(form: FormData) {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const session = await staffSession();
+  if (session?.email === email) redirect("/staff");
   const code = String(form.get("code") ?? "").trim();
   if (email.length > 254 || code.length > 8) redirect("/staff/login?error=1");
   if (!await allowRequest("staff-verify", email, { ip: 40, identity: 10, seconds: 900 })) redirect("/staff/login?error=limit");
@@ -78,5 +85,6 @@ export async function signOutStaff() {
 
 export async function changeStaffEmail() {
   (await cookies()).set("hms_staff_pending_email", "", { path:"/staff/login", maxAge:0 });
+  (await cookies()).set("hms_staff_code_requested_at", "", { path:"/staff/login", maxAge:0 });
   redirect("/staff/login");
 }
