@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { LoanCards, LOAN_VISUALS } from "@/components/LoanCards";
 import { LineIcon } from "@/components/LineIcon";
 import { JsonLd } from "@/components/JsonLd";
+import { LOAN_GUIDES } from "@/lib/loanGuides";
 export function generateStaticParams() { return LOAN_TYPES.map(loan => ({ slug: loan.slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params; const loan = getLoanType(slug); if (!loan) return {};
@@ -16,6 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 export default async function LoanDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params; const loan = getLoanType(slug); if (!loan) notFound(); const visual = LOAN_VISUALS[loan.slug];
+  const guide = LOAN_GUIDES[loan.slug];
   return <main id="main-content" className="page page-wide">
     <Breadcrumbs items={[{ name: "Our loans", href: "/loans" }, { name: loan.name, href: `/loans/${loan.slug}` }]} />
     <header className={`loan-detail-header service-${visual.theme}`}><span className="service-icon"><LineIcon name={visual.icon}/></span><div><span className="eyebrow">{visual.label}</span><h1>{loan.name}</h1><p className="subtitle">{loan.tagline}</p><a href="#apply" className="text-link loan-header-link">Enquire about this loan <LineIcon name="arrow"/></a></div></header>
@@ -23,10 +25,13 @@ export default async function LoanDetailPage({ params }: { params: Promise<{ slu
       <p className="loan-introduction">{loan.description}</p>
       <section className="loan-info-block"><h2>What you get</h2><ul className="bullet-list">{loan.bullets.map(b => <li key={b}>{b}</li>)}</ul></section>
       <section className="loan-info-block"><h2>What you’ll need</h2><ul className="bullet-list">{loan.eligibility.map(e => <li key={e}>{e}</li>)}</ul><p className="small-note">These are starting requirements. Our team will confirm the documents needed for your individual assessment.</p></section>
+      <section className="loan-info-block"><h2>{guide.heading}</h2>{guide.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>
       <aside className="repayment-prompt"><LineIcon name="calculator"/><div><h3>Start with the monthly repayment.</h3><p>Use an estimate to see how a repayment could fit your budget. The calculator does not determine eligibility or approval.</p><Link href="/loan-calculator" className="text-link">Open the calculator <LineIcon name="arrow"/></Link></div></aside>
       <section className="loan-info-block"><h2>Before you decide</h2><p>Our team will explain the rate, fees and repayment schedule before you sign. Verification and completion take place at our Sim Lim Square office. Sending an enquiry does not guarantee approval.</p><Link className="text-link" href="/faq">Read the borrowing FAQ <LineIcon name="arrow"/></Link></section>
+      <section className="loan-info-block"><h2>{loan.name} questions</h2><div className="faq-list">{guide.questions.map(item => <details className="faq-item" key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section>
+      <section className="loan-info-block"><h2>Speak with us at Sim Lim Square</h2><p>Visit HMS Credit at #01-08, 1 Rochor Canal Road, Singapore 188504. We are open Monday–Saturday, 11am–7pm; Sundays by appointment, closed on public holidays.</p><Link className="text-link" href="/contact">Contact details and directions <LineIcon name="arrow"/></Link><p className="small-note">Learn more <Link href="/about">about HMS Credit</Link>, or <Link href="/apply">start your application with Myinfo or the manual form</Link>.</p></section>
     </div><aside className="card enquiry-panel" id="apply"><span className="eyebrow">Let’s talk</span><h2>Enquire about this loan</h2><p className="small-note">Tell us a little about yourself. Our team will contact you to discuss the next step.</p><LeadForm loanType={loan.name}/><a className="enquiry-phone" href="tel:+6563339061"><LineIcon name="phone"/>Prefer to call? 6333 9061</a></aside></div>
-    <section className="related-loans"><div className="section-heading"><span className="eyebrow">Explore your options</span><h2>Other ways we may be able to help.</h2></div><LoanCards loans={LOAN_TYPES.filter(l => l.slug !== loan.slug).slice(0,2)} headingLevel={3}/></section>
+    <section className="related-loans"><div className="section-heading"><span className="eyebrow">Explore your options</span><h2>Other ways we may be able to help.</h2></div><LoanCards loans={guide.related.map(slug => getLoanType(slug)!)} headingLevel={3}/><Link href="/loans" className="text-link">Compare all five loan options <LineIcon name="arrow"/></Link></section>
     <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", "@id": `https://hmsmoney.com/loans/${loan.slug}#service`, name: loan.name, serviceType: loan.name, description: loan.description, url: `https://hmsmoney.com/loans/${loan.slug}`, provider: { "@id": "https://hmsmoney.com/#business" }, areaServed: { "@type": "Country", name: "Singapore" } }}/>
   </main>;
 }

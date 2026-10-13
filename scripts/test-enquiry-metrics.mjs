@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const now=new Date('2026-10-13T04:00:00Z');
+const daysAgo=days=>new Date(now.getTime()-days*86400000);
+const manual=[...Array.from({length:60},()=>({createdAt:daysAgo(1)})),{createdAt:daysAgo(7)},{createdAt:daysAgo(20)},{createdAt:daysAgo(40)}];
+const applicants=[{createdAt:daysAgo(2),sourceEnvironment:'production'},{createdAt:daysAgo(20),sourceEnvironment:'production'},{createdAt:daysAgo(1),sourceEnvironment:'staging'}];
+const count=rows=>async({where})=>rows.filter(row=>(!where.sourceEnvironment||row.sourceEnvironment===where.sourceEnvironment)&&(!where.createdAt||row.createdAt>=where.createdAt.gte&&row.createdAt<=where.createdAt.lte)).length;
+const context={exports:{},Date,require:key=>key==='server-only'?{}:{prisma:{lead:{count:count(manual)},applicant:{count:count(applicants)}}}};
+vm.runInNewContext(ts.transpileModule(readFileSync('src/lib/enquiryMetrics.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,context);
+const result=JSON.parse(JSON.stringify(await context.exports.enquiryMetrics(now)));
+assert.deepEqual(result,[{label:'Past 7 days',manual:61,myinfo:1,total:62},{label:'Past 30 days',manual:62,myinfo:2,total:64},{label:'All saved enquiries',manual:63,myinfo:2,total:65}]);
+console.log('PASS: counts exceed the 50-row list cap, include cutoff dates, separate channels and exclude staging.');
