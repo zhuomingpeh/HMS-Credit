@@ -37,8 +37,8 @@ export default function FaqPage() {
   return (
     <main id="main-content" className="page">
       <Breadcrumbs items={[{ name: "FAQ", href: "/faq" }]} />
-      <span className="eyebrow">Clear answers before you apply</span>
-      <h1>Your questions, answered.</h1>
+
+      <h1>Questions about borrowing</h1>
       <p className="subtitle">Common questions about borrowing from a licensed moneylender.</p>
 
       <div className="faq-list">

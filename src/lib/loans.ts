@@ -14,7 +14,7 @@ export const LOAN_TYPES: LoanType[] = [
     name: "Personal Loan",
     tagline: "Support for everyday expenses and unexpected costs",
     description:
-      "From medical bills to a shortfall between paychecks, our personal loans are structured around what you can comfortably repay — not a one-size-fits-all package.",
+      "Discuss a personal loan for medical bills, household expenses or a shortfall between paydays. Our team will review your income and existing commitments to assess what you can repay.",
     bullets: [
       "Flexible repayment tenure",
       "Funds disbursed shortly after approval",
@@ -31,7 +31,7 @@ export const LOAN_TYPES: LoanType[] = [
     name: "Foreigner Loan",
     tagline: "Financial support while you're working in Singapore",
     description:
-      "Work Permit, S Pass, and E Pass holders can face financing gaps banks won't cover. We assess foreign employees on their actual ability to repay, not just their residency status.",
+      "Working in Singapore on a Work Permit, S Pass or E Pass? Speak with our team about a loan assessment based on your employment, income and ability to repay.",
     bullets: [
       "Open to Work Permit, S Pass and E Pass holders",
       "Simple documentation",
@@ -82,7 +82,7 @@ export const LOAN_TYPES: LoanType[] = [
     name: "Education Loan",
     tagline: "Invest in tuition, courses, and upskilling",
     description:
-      "Course fees, tuition, or a certification that pays off in your next job — an education loan covers costs that build your future, on repayment terms that match your study or work schedule.",
+      "Discuss funding for tuition, course fees or professional training. Consider the full cost of your course alongside your income and regular commitments before deciding to borrow.",
     bullets: [
       "Covers tuition and course-related expenses",
       "Repayment terms that fit around your schedule",

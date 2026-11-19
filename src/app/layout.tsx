@@ -3,6 +3,7 @@ import { Poppins, Inter } from "next/font/google";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
+import "./public-refinements.css";
 import { headers } from "next/headers";
 
 const headingFont = Poppins({

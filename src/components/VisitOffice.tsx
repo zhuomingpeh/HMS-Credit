@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LineIcon } from "./LineIcon";
 export function VisitOffice() {
   return <section className="visit-panel" aria-labelledby="visit-heading">
-    <div className="visit-panel-copy"><span className="eyebrow">A real place. A personal conversation.</span><h2 id="visit-heading">Meet us at Sim Lim Square.</h2>
+    <div className="visit-panel-copy"><h2 id="visit-heading">Visit HMS Credit<br/>at Sim Lim Square.</h2>
       <p>Speak with our team, ask your questions and understand the repayment terms before making a decision.</p>
       <address><LineIcon name="pin" /><span>#01-08 Sim Lim Square<br/>1 Rochor Canal Road, Singapore 188504</span></address>
       <p className="visit-hours">Monday–Saturday, 11am–7pm<br/>Sundays by appointment · Closed on public holidays</p>

@@ -1,0 +1,77 @@
+/* Shared marketing refinements: existing HMS brand, more space and fewer boxes. */
+::selection { background:#dcebcf; color:#102b20; }
+input,select,textarea { caret-color:#24613e; }
+h1,h2,h3 { text-wrap:balance; }
+.page-wide,.loans-page,.site-nav-inner,.site-footer-inner { max-width:1208px; }
+.site-nav-inner { min-height:84px; padding-top:16px; padding-bottom:16px; }
+.site-logo { font-weight:600; letter-spacing:-.025em; }
+.site-nav-links a:not(.button) { font-weight:500; }
+.site-nav-links a:not(.button):hover { color:#24613e; text-decoration:underline; text-underline-offset:7px; }
+.button { border-radius:8px; font-weight:600; transition:background .18s ease,transform .18s ease; }
+.button:hover { transform:translateY(-1px); }
+.button:active { transform:translateY(1px); }
+.button:disabled { transform:none; }
+.text-link { min-height:44px; }
+.page-intro h1,.catalogue-heading h1 { font-weight:600; font-size:clamp(2.2rem,4.5vw,3.5rem); line-height:1.15; }
+.page-intro,.catalogue-heading { margin-top:12px; margin-bottom:48px; }
+.page-intro .subtitle,.catalogue-heading .subtitle { max-width:60ch; }
+.trust-bar { background:white; }
+.trust-bar-inner { max-width:1208px; padding:28px 24px; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; text-align:left; justify-content:stretch; }
+.trust-bar-inner>span { font-size:.78rem; line-height:1.65; }
+.trust-bar-inner strong { display:block; font-size:.9rem; font-weight:600; margin-bottom:4px; }
+.trust-bar-inner>span+span { border-left:1px solid #dde4dc; padding-left:32px; }
+.catalogue-note { text-align:left; margin:28px 0 0; max-width:70ch; }
+.catalogue-assurance { color:#4c5b55; }
+.section-heading h2 { font-size:clamp(1.6rem,3vw,2.2rem); font-weight:600; }
+.process-grid { gap:40px; }
+.process-grid h3 { font-weight:600; }
+.process-number { font-weight:500; }
+.visit-panel { background:#f3f5ef; border:0; border-radius:16px; grid-template-columns:1fr 1fr; }
+.visit-panel-copy { padding:56px; align-self:center; }
+.visit-panel h2 { font-size:clamp(1.8rem,3vw,2.5rem); font-weight:600; line-height:1.22; margin-bottom:24px; }
+.visit-panel-copy>p { max-width:43ch; color:#4c5b55; }
+.visit-panel-photo { max-height:none; min-height:540px; object-position:50% 40%; }
+.loan-detail-header { padding:32px 0; background:transparent; border-radius:0; border-bottom:1px solid #d7dfd9; }
+.loan-detail-header h1 { font-weight:600; font-size:clamp(2rem,4vw,3.2rem); }
+.loan-detail-header .service-icon { box-shadow:none; background:#edf3ea; border:0; color:#24613e; }
+.loan-info-block { margin-bottom:32px; }
+.loan-info-block h2 { font-weight:600; font-size:1.3rem; }
+.loan-info-block p { line-height:1.8; }
+.enquiry-panel { background:#f5f7f2; border:1px solid #dce3d9; box-shadow:none; border-radius:16px; }
+.enquiry-panel .field input { background:white; }
+.company-facts { border:0; background:#f3f5ef; padding:24px 32px; }
+.about-story h2 { font-weight:600; }
+.faq-item { background:transparent; border:0; border-bottom:1px solid #d7dfd9; border-radius:0; }
+.faq-item summary { padding:24px 48px 24px 0; font-weight:600; }
+.faq-item summary::after { top:20px; right:12px; }
+.faq-item p { padding:0 32px 24px 0; max-width:70ch; line-height:1.8; }
+.faq-item summary:hover { color:#24613e; }
+.faq-support { background:#eef3e9; }
+.calculator-estimate { background:#123262; }
+.repayment-calculator { box-shadow:none; }
+.calculator-presets button { min-height:44px; }
+.contact-tile { background:white; padding:20px 0; border:0; border-top:1px solid #d7dfd9; border-radius:0; }
+.office-visit-card { border:0; background:#f3f5ef; }
+.office-visit-card>div { padding:32px; }
+.site-footer { margin-top:0; }
+.site-footer-col a { min-height:36px; display:flex; align-items:center; }
+.site-footer-col strong { letter-spacing:.02em; }
+@media(max-width:960px) { .visit-panel-copy { padding:32px; } .visit-panel-photo { min-height:480px; } }
+@media(max-width:760px) {
+ .site-nav-inner { min-height:72px; padding:12px 24px; }
+ .nav-toggle { min-height:44px; }
+ .trust-bar-inner { gap:16px; padding:24px; }
+ .trust-bar-inner>span+span { padding-left:16px; }
+ .trust-bar-inner strong { font-size:.8rem; }
+ .trust-bar-inner>span { font-size:.7rem; }
+ .visit-panel { grid-template-columns:1fr; }
+ .visit-panel-photo { min-height:0; height:390px; }
+ .visit-panel-copy { padding:32px; }
+ .page-intro,.catalogue-heading { margin-bottom:32px; }
+ .loan-detail-header { padding:16px 0 28px; }
+ .process-grid { gap:24px; }
+ .site-footer-col a { min-height:44px; }
+}
+@media(max-width:480px) { .trust-bar-inner { grid-template-columns:1fr; gap:12px; } .trust-bar-inner>span { font-size:.8rem; } .trust-bar-inner strong { font-size:.85rem; display:inline; margin-right:8px; } .trust-bar-inner>span+span { border-left:0; padding-left:0; } .visit-panel-copy { padding:28px 24px; } }
+@media(max-width:360px) { .site-nav-inner { padding-left:16px; padding-right:16px; gap:8px; } .site-logo { font-size:1rem; } .site-logo-mark-img { height:26px; } .nav-toggle { padding:8px; } }
+@media(prefers-reduced-motion:reduce) { .button { transition:none; } .button:hover,.button:active { transform:none; } }

@@ -8,7 +8,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="button" disabled={pending} style={{ width: "100%" }}>
-      {pending ? "Submitting…" : "Submit"}
+      {pending ? "Sending enquiry…" : "Send enquiry"}
     </button>
   );
 }
@@ -62,7 +62,7 @@ export function LeadForm({ loanType, initialAmount }: { loanType?: string; initi
       </fieldset>
 
       <div className="field">
-        <label htmlFor="loanAmount">Loan amount</label>
+        <label htmlFor="loanAmount">Requested loan amount (S$)</label>
         <input id="loanAmount" name="loanAmount" type="number" min={500} max={1000000} step={1} defaultValue={initialAmount} required placeholder="$" />
       </div>
 
