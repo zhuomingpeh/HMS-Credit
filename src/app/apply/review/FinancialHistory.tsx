@@ -23,7 +23,7 @@ export function FinancialHistory({ info, readOnly = false }: { info: Row; readOn
   const noa = rows(info, "noahistory", "noas");
   return <>
     <section className="card"><h2>CPF contribution history</h2><p className="review-caption">Employer contributions · up to 15 months</p>
-      {cpf.length ? <div className="review-table-scroll"><table className="review-table"><thead><tr><th>For month</th><th>Paid on</th><th>Amount (S$)</th><th>Employer contribution</th></tr></thead><tbody>{cpf.map((row,i) => <tr key={i}><td>{value(row.month)}</td><td>{value(row.date)}</td><td>{money(row.amount)}</td><td>{value(row.employer)}</td></tr>)}</tbody></table></div> : <p>Not available from Myinfo</p>}
+      {cpf.length ? <div className="review-table-scroll" tabIndex={0} role="region" aria-label="CPF contribution history; scroll to see all columns"><table className="review-table"><thead><tr><th>For month</th><th>Paid on</th><th>Amount (S$)</th><th>Employer contribution</th></tr></thead><tbody>{cpf.map((row,i) => <tr key={i}><td>{value(row.month)}</td><td>{value(row.date)}</td><td>{money(row.amount)}</td><td>{value(row.employer)}</td></tr>)}</tbody></table></div> : <p>Not available from Myinfo</p>}
     </section>
     <section className="card"><h2>Notice of Assessment</h2>
       {noa.length ? <div className="noa-grid">{noa.map((row,i) => <div className="noa-record" key={i}>

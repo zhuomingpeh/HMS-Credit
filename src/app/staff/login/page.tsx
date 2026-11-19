@@ -14,7 +14,7 @@ export default async function StaffLogin({ searchParams }: { searchParams: Promi
   // eslint-disable-next-line react-hooks/purity
   const cooldown = Number.isFinite(requestedAt) ? Math.min(60, Math.max(0, Math.ceil((requestedAt + 60000 - Date.now()) / 1000))) : 0;
   return <main id="main-content" className="page staff-login">
-    <header className="staff-login-heading"><span className="staff-login-eyebrow">HMS CREDIT · STAFF PORTAL</span><h1>Staff sign in</h1><p>Use your authorised staff email to receive a sign-in code.</p></header>
+    <header className="staff-login-heading"><h1>Staff sign in</h1><p>Use your authorised staff email to receive a sign-in code.</p></header>
     {state.sent && <p className="staff-login-notice" role="status">Code requested. If this address is authorised, check its inbox and spam folder. Use the newest email code; requesting a replacement invalidates the previous code.</p>}
     {state.error && <p className="error-banner" role="alert">{state.error === "limit" ? "Too many sign-in attempts. Please wait 15 minutes before trying again." : state.error === "unavailable" ? "Email sign-in is temporarily unavailable. Please try again later." : "The code is invalid or expired. Request a new code and try again."}</p>}
     <div className="staff-login-steps">

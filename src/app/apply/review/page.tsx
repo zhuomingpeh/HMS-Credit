@@ -37,7 +37,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
         { title: "Pass details", keys: ["passtype", "passstatus", "passexpirydate"] },
       ].map(group => <section className="card" key={group.title}><h2>{group.title}</h2><div className="review-grid">
         {group.keys.flatMap(key => sections.filter(s => s.key === key)).flatMap(({key, fields}) => fields.map((field, i) => <div className="review-detail" key={`${field.path}-${i}`}>
-          <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label>
+          {key === "marital" || field.editable ? <label htmlFor={`field-${field.path}`}>{field.label || fieldLabel(key)}</label> : <div className="review-field-label">{field.label || fieldLabel(key)}</div>}
           {key === "marital" ? <select id={`field-${field.path}`} name={`myinfo:${field.path}`} defaultValue={field.value}>
             <option value="">Select marital status</option>
             {field.value && !MARITAL_STATUSES.includes(field.value as typeof MARITAL_STATUSES[number]) && <option value={field.value}>{field.value}</option>}
